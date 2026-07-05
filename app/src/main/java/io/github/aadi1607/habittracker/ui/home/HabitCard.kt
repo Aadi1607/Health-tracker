@@ -2,6 +2,7 @@ package io.github.aadi1607.habittracker.ui.home
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloat
@@ -39,10 +40,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.pluralStringResource
@@ -59,7 +66,7 @@ import java.util.Locale
 @Composable
 fun HabitCard(
     card: HabitCardUi,
-    onToggle: () -> Unit,
+    onTap: () -> Unit,
     onLongPress: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -68,7 +75,7 @@ fun HabitCard(
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .combinedClickable(onClick = onToggle, onLongClick = onLongPress),
+            .combinedClickable(onClick = onTap, onLongClick = onLongPress),
         shape = MaterialTheme.shapes.extraLarge,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainer,
@@ -96,11 +103,21 @@ fun HabitCard(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )
+                        val streakText = if (card.streak > 0) {
+                            pluralStringResource(R.plurals.streak_days, card.streak, card.streak)
+                        } else {
+                            stringResource(R.string.no_streak_yet)
+                        }
                         Text(
-                            text = if (card.streak > 0) {
-                                pluralStringResource(R.plurals.streak_days, card.streak, card.streak)
+                            text = if (card.habit.dailyTarget > 1) {
+                                stringResource(
+                                    R.string.card_subtitle_with_count,
+                                    card.todayCount.coerceAtMost(card.habit.dailyTarget),
+                                    card.habit.dailyTarget,
+                                    streakText,
+                                )
                             } else {
-                                stringResource(R.string.no_streak_yet)
+                                streakText
                             },
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -116,26 +133,40 @@ fun HabitCard(
             }
             Spacer(modifier = Modifier.size(12.dp))
             CheckButton(
-                checked = card.completedToday,
+                count = card.todayCount,
+                target = card.habit.dailyTarget,
                 color = habitColor,
                 habitName = card.habit.name,
-                onClick = onToggle,
+                onClick = onTap,
             )
         }
     }
 }
 
+/**
+ * Circular tap target: a progress ring fills as the habit is logged during the
+ * day and turns into a solid check once the daily target is reached. For
+ * single-target habits it behaves like a plain check toggle.
+ */
 @Composable
 private fun CheckButton(
-    checked: Boolean,
+    count: Int,
+    target: Int,
     color: Color,
     habitName: String,
     onClick: () -> Unit,
 ) {
     val haptics = LocalHapticFeedback.current
     val scale = remember { Animatable(1f) }
+    val checked = count >= target
 
-    // Bounce whenever the habit flips to completed.
+    val ringProgress by animateFloatAsState(
+        targetValue = (count.toFloat() / target).coerceIn(0f, 1f),
+        animationSpec = tween(durationMillis = 300),
+        label = "ringProgress",
+    )
+
+    // Bounce whenever the habit reaches its target.
     LaunchedEffect(checked) {
         if (checked) {
             scale.snapTo(0.7f)
@@ -149,6 +180,7 @@ private fun CheckButton(
         }
     }
 
+    val trackColor = color.copy(alpha = 0.25f)
     IconButton(
         onClick = {
             haptics.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -157,11 +189,36 @@ private fun CheckButton(
         modifier = Modifier
             .size(56.dp)
             .scale(scale.value)
+            .drawBehind {
+                if (!checked) {
+                    val stroke = 3.dp.toPx()
+                    val arcSize = Size(size.width - stroke, size.height - stroke)
+                    val topLeft = Offset(stroke / 2f, stroke / 2f)
+                    drawArc(
+                        color = trackColor,
+                        startAngle = -90f,
+                        sweepAngle = 360f,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = stroke, cap = StrokeCap.Round),
+                    )
+                    drawArc(
+                        color = color,
+                        startAngle = -90f,
+                        sweepAngle = 360f * ringProgress,
+                        useCenter = false,
+                        topLeft = topLeft,
+                        size = arcSize,
+                        style = Stroke(width = stroke, cap = StrokeCap.Round),
+                    )
+                }
+            }
             .then(
                 if (checked) {
                     Modifier.background(color, CircleShape)
                 } else {
-                    Modifier.border(2.dp, color.copy(alpha = 0.6f), CircleShape)
+                    Modifier
                 }
             ),
         colors = IconButtonDefaults.iconButtonColors(
@@ -172,15 +229,25 @@ private fun CheckButton(
             },
         ),
     ) {
-        Icon(
-            imageVector = Icons.Default.Check,
-            contentDescription = if (checked) {
-                stringResource(R.string.mark_not_done, habitName)
-            } else {
-                stringResource(R.string.mark_done, habitName)
-            },
-            modifier = Modifier.size(28.dp),
-        )
+        val description = if (checked) {
+            stringResource(R.string.mark_not_done, habitName)
+        } else {
+            stringResource(R.string.mark_done, habitName)
+        }
+        if (!checked && target > 1) {
+            Text(
+                text = stringResource(R.string.count_of_target, count, target),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.semantics { contentDescription = description },
+            )
+        } else {
+            Icon(
+                imageVector = Icons.Default.Check,
+                contentDescription = description,
+                modifier = Modifier.size(28.dp),
+            )
+        }
     }
 }
 
@@ -227,8 +294,8 @@ private fun DayChain(
                 if (week[i].completed && week[i + 1].completed) {
                     drawLine(
                         color = color,
-                        start = androidx.compose.ui.geometry.Offset(centerX(i) + dotRadius, centerY),
-                        end = androidx.compose.ui.geometry.Offset(centerX(i + 1) - dotRadius, centerY),
+                        start = Offset(centerX(i) + dotRadius, centerY),
+                        end = Offset(centerX(i + 1) - dotRadius, centerY),
                         strokeWidth = lineWidth,
                         cap = StrokeCap.Round,
                     )
@@ -237,22 +304,37 @@ private fun DayChain(
 
             week.forEachIndexed { index, day ->
                 val cx = centerX(index)
+                val center = Offset(cx, centerY)
                 when {
                     day.completed -> drawCircle(
                         color = color,
                         radius = dotRadius,
-                        center = androidx.compose.ui.geometry.Offset(cx, centerY),
+                        center = center,
                     )
-                    day.isToday -> drawCircle(
-                        color = color,
-                        radius = dotRadius * pulse,
-                        center = androidx.compose.ui.geometry.Offset(cx, centerY),
-                        style = Stroke(width = 2.dp.toPx()),
+                    day.isToday -> {
+                        drawCircle(
+                            color = color,
+                            radius = dotRadius * pulse,
+                            center = center,
+                            style = Stroke(width = 2.dp.toPx()),
+                        )
+                        if (day.partial) {
+                            drawCircle(
+                                color = color.copy(alpha = 0.5f),
+                                radius = dotRadius * 0.55f,
+                                center = center,
+                            )
+                        }
+                    }
+                    day.partial -> drawCircle(
+                        color = color.copy(alpha = 0.35f),
+                        radius = dotRadius,
+                        center = center,
                     )
                     else -> drawCircle(
                         color = emptyDot,
                         radius = dotRadius,
-                        center = androidx.compose.ui.geometry.Offset(cx, centerY),
+                        center = center,
                     )
                 }
             }

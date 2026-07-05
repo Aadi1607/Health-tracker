@@ -8,11 +8,15 @@
     <string name="habit_name_label">Name</string>
     <string name="habit_name_hint">Drink water</string>
     <string name="pick_emoji">Pick an icon</string>
+    <string name="times_per_day">Times per day</string>
+    <string name="times_per_day_hint">e.g. 8 for drinking water through the day</string>
     <string name="pick_color">Pick a color</string>
     <string name="color_selected">Selected color</string>
     <string name="save_habit">Save habit</string>
 
     <string name="no_streak_yet">Start your streak today</string>
+    <string name="count_of_target" translatable="false">%1$d/%2$d</string>
+    <string name="card_subtitle_with_count">%1$d of %2$d today · %3$s</string>
     <plurals name="streak_days">
         <item quantity="one">%d day streak</item>
         <item quantity="other">%d day streak</item>
@@ -40,6 +44,9 @@
     <string name="daily_reminder">Daily reminder</string>
     <string name="daily_reminder_summary">A nudge if habits are still pending</string>
     <string name="reminder_time">Reminder time</string>
+    <string name="nudges">Frequent nudges</string>
+    <string name="nudges_summary">Repeat reminders during the day (8:00–22:00) while habits like drinking water are pending</string>
+    <string name="every_n_hours">Every %1$d h</string>
     <string name="export_data">Export JSON</string>
     <string name="import_data">Import JSON</string>
     <string name="export_success">Backup exported</string>
@@ -62,7 +69,11 @@
 
     <string name="notification_channel_name">Daily reminders</string>
     <string name="notification_channel_description">Reminds you about habits that are still pending today</string>
+    <string name="nudge_channel_name">Frequent nudges</string>
+    <string name="nudge_channel_description">Repeat reminders during the day for habits that are done several times, like drinking water</string>
     <string name="reminder_notification_title">Keep your streak alive</string>
+    <string name="nudge_notification_title">Habit check-in 💧</string>
+    <string name="habit_progress_line" translatable="false">%1$s %2$s (%3$d/%4$d)</string>
     <plurals name="reminder_notification_text">
         <item quantity="one">%d habit is still waiting for you today</item>
         <item quantity="other">%d habits are still waiting for you today</item>

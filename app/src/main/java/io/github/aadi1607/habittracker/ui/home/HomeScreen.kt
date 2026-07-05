@@ -113,7 +113,7 @@ fun HomeRoute(
                 items(state.habits, key = { it.habit.id }) { card ->
                     HabitCard(
                         card = card,
-                        onToggle = { viewModel.toggleCompletion(card) },
+                        onTap = { viewModel.tap(card) },
                         onLongPress = { habitIdToDelete = card.habit.id },
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
@@ -126,8 +126,8 @@ fun HomeRoute(
     if (showAddSheet) {
         AddHabitSheet(
             onDismiss = { showAddSheet = false },
-            onSave = { name, emoji, color ->
-                viewModel.addHabit(name, emoji, color)
+            onSave = { name, emoji, color, dailyTarget ->
+                viewModel.addHabit(name, emoji, color, dailyTarget)
                 showAddSheet = false
             },
         )
@@ -141,6 +141,8 @@ fun HomeRoute(
             onDynamicColorChange = viewModel::setDynamicColor,
             onReminderEnabledChange = viewModel::setReminderEnabled,
             onReminderTimeChange = viewModel::setReminderTime,
+            onNudgesEnabledChange = viewModel::setNudgesEnabled,
+            onNudgeIntervalChange = viewModel::setNudgeInterval,
             onExport = { exportLauncher.launch("habit-tracker-backup.json") },
             onImport = { importLauncher.launch(arrayOf("application/json")) },
         )

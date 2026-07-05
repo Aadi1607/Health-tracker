@@ -16,10 +16,12 @@ data class BackupHabit(
     val emoji: String,
     val color: Long,
     val createdAt: Long,
+    val dailyTarget: Int = 1,
 )
 
 @Serializable
 data class BackupCompletion(
     val habitId: Long,
     val date: String,
+    val count: Int = 1,
 )

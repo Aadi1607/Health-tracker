@@ -24,10 +24,10 @@ class BackupManager(
         runCatching {
             val data = BackupData(
                 habits = repository.getHabits().map {
-                    BackupHabit(it.id, it.name, it.emoji, it.color, it.createdAt)
+                    BackupHabit(it.id, it.name, it.emoji, it.color, it.createdAt, it.dailyTarget)
                 },
                 completions = repository.getCompletions().map {
-                    BackupCompletion(it.habitId, it.date)
+                    BackupCompletion(it.habitId, it.date, it.count)
                 },
             )
             val stream = context.contentResolver.openOutputStream(uri)
@@ -44,9 +44,11 @@ class BackupManager(
             val data = json.decodeFromString(BackupData.serializer(), text)
             repository.replaceAll(
                 habits = data.habits.map {
-                    Habit(it.id, it.name, it.emoji, it.color, it.createdAt)
+                    Habit(it.id, it.name, it.emoji, it.color, it.createdAt, it.dailyTarget)
                 },
-                completions = data.completions.map { Completion(it.habitId, it.date) },
+                completions = data.completions.map {
+                    Completion(it.habitId, it.date, it.count)
+                },
             )
             data.habits.size
         }

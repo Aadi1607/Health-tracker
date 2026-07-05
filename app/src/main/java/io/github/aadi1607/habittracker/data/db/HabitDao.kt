@@ -30,8 +30,8 @@ interface HabitDao {
     @Query("SELECT * FROM completions WHERE date >= :fromDate AND date <= :toDate")
     suspend fun getCompletionsBetween(fromDate: String, toDate: String): List<Completion>
 
-    @Query("SELECT COUNT(*) FROM completions WHERE date = :date")
-    suspend fun countCompletionsOn(date: String): Int
+    @Query("SELECT * FROM completions WHERE date = :date")
+    suspend fun getCompletionsOn(date: String): List<Completion>
 
     @Insert
     suspend fun insertHabit(habit: Habit): Long
@@ -44,6 +44,28 @@ interface HabitDao {
 
     @Query("DELETE FROM completions WHERE habitId = :habitId AND date = :date")
     suspend fun deleteCompletion(habitId: Long, date: String)
+
+    @Query("UPDATE completions SET count = count + 1 WHERE habitId = :habitId AND date = :date")
+    suspend fun incrementCount(habitId: Long, date: String): Int
+
+    @Query("UPDATE completions SET count = count - 1 WHERE habitId = :habitId AND date = :date AND count > 1")
+    suspend fun decrementCount(habitId: Long, date: String): Int
+
+    /** Logs the habit once more for [date], creating the row on the first log. */
+    @Transaction
+    suspend fun increment(habitId: Long, date: String) {
+        if (incrementCount(habitId, date) == 0) {
+            insertCompletion(Completion(habitId, date, 1))
+        }
+    }
+
+    /** Removes one log for [date]; the row disappears when the count reaches zero. */
+    @Transaction
+    suspend fun decrement(habitId: Long, date: String) {
+        if (decrementCount(habitId, date) == 0) {
+            deleteCompletion(habitId, date)
+        }
+    }
 
     @Insert
     suspend fun insertHabits(habits: List<Habit>)

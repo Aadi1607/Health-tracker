@@ -50,13 +50,19 @@ class StatsViewModel(
         ) { habits, completions, selectedMonth ->
             val today = LocalDate.now()
             val zone = ZoneId.systemDefault()
-            val byHabit = completions.groupBy(
-                keySelector = { it.habitId },
-                valueTransform = { LocalDate.parse(it.date) },
-            )
+            val targets = habits.associate { it.id to it.dailyTarget }
+            // Per habit: the dates on which the daily target was reached.
+            val doneByHabit: Map<Long, Set<LocalDate>> = completions
+                .groupBy { it.habitId }
+                .mapValues { (habitId, list) ->
+                    val target = targets[habitId] ?: 1
+                    list.filter { it.count >= target }
+                        .map { LocalDate.parse(it.date) }
+                        .toSet()
+                }
 
             val stats = habits.map { habit ->
-                val done = byHabit[habit.id]?.toSet().orEmpty()
+                val done = doneByHabit[habit.id].orEmpty()
                 val createdOn = Instant.ofEpochMilli(habit.createdAt).atZone(zone).toLocalDate()
                 HabitStats(
                     habit = habit,
@@ -67,12 +73,15 @@ class StatsViewModel(
             }
 
             val habitCount = habits.size
-            val completionsPerDay = completions.groupingBy { it.date }.eachCount()
+            val completedPerDay = doneByHabit.values
+                .flatten()
+                .groupingBy { it }
+                .eachCount()
             val heatmap = buildMap {
                 if (habitCount > 0) {
                     for (dayOfMonth in 1..selectedMonth.lengthOfMonth()) {
                         val date = selectedMonth.atDay(dayOfMonth)
-                        val count = completionsPerDay[date.toString()] ?: 0
+                        val count = completedPerDay[date] ?: 0
                         put(date, (count.toFloat() / habitCount).coerceIn(0f, 1f))
                     }
                 }

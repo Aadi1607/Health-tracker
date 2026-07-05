@@ -23,19 +23,30 @@ class HabitApplication : Application() {
     }
 
     private fun createReminderChannel() {
-        val channel = NotificationChannel(
-            REMINDER_CHANNEL_ID,
-            getString(R.string.notification_channel_name),
-            NotificationManager.IMPORTANCE_DEFAULT,
-        ).apply {
-            description = getString(R.string.notification_channel_description)
-        }
         val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
+        manager.createNotificationChannel(
+            NotificationChannel(
+                REMINDER_CHANNEL_ID,
+                getString(R.string.notification_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT,
+            ).apply {
+                description = getString(R.string.notification_channel_description)
+            }
+        )
+        manager.createNotificationChannel(
+            NotificationChannel(
+                NUDGE_CHANNEL_ID,
+                getString(R.string.nudge_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT,
+            ).apply {
+                description = getString(R.string.nudge_channel_description)
+            }
+        )
     }
 
     companion object {
         const val REMINDER_CHANNEL_ID = "daily_reminders"
+        const val NUDGE_CHANNEL_ID = "habit_nudges"
     }
 }
 

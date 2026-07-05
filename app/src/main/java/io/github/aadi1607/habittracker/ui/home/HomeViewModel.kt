@@ -33,16 +33,22 @@ import kotlinx.coroutines.launch
 /** A single day cell in the 7-day chain. */
 data class DayCell(
     val date: LocalDate,
+    /** The daily target was reached on this day. */
     val completed: Boolean,
+    /** Some progress was logged but the target was not reached. */
+    val partial: Boolean,
     val isToday: Boolean,
 )
 
 data class HabitCardUi(
     val habit: Habit,
-    val completedToday: Boolean,
+    /** Times logged today, 0..dailyTarget (and possibly beyond). */
+    val todayCount: Int,
     val streak: Int,
     val week: List<DayCell>,
-)
+) {
+    val completedToday: Boolean get() = todayCount >= habit.dailyTarget
+}
 
 data class HomeUiState(
     val habits: List<HabitCardUi> = emptyList(),
@@ -51,7 +57,16 @@ data class HomeUiState(
     val loaded: Boolean = false,
 ) {
     val total: Int get() = habits.size
-    val progress: Float get() = if (total == 0) 0f else doneToday.toFloat() / total
+
+    /** Header bar progress with partial credit for multi-target habits. */
+    val progress: Float
+        get() = if (total == 0) {
+            0f
+        } else {
+            habits.map {
+                it.todayCount.coerceAtMost(it.habit.dailyTarget).toFloat() / it.habit.dailyTarget
+            }.sum() / total
+        }
 }
 
 class HomeViewModel(
@@ -73,19 +88,25 @@ class HomeViewModel(
 
     val uiState: StateFlow<HomeUiState> =
         combine(repository.observeHabits(), repository.observeCompletions(), today) { habits, completions, date ->
-            val byHabit = completions.groupBy(
-                keySelector = { it.habitId },
-                valueTransform = { LocalDate.parse(it.date) },
-            )
+            val countsByHabit: Map<Long, Map<LocalDate, Int>> = completions
+                .groupBy { it.habitId }
+                .mapValues { (_, list) -> list.associate { LocalDate.parse(it.date) to it.count } }
             val lastSeven = Streaks.lastDays(date, 7)
             val cards = habits.map { habit ->
-                val done = byHabit[habit.id]?.toSet().orEmpty()
+                val counts = countsByHabit[habit.id].orEmpty()
+                val done = counts.filterValues { it >= habit.dailyTarget }.keys
                 HabitCardUi(
                     habit = habit,
-                    completedToday = date in done,
+                    todayCount = counts[date] ?: 0,
                     streak = Streaks.currentStreak(done, date),
                     week = lastSeven.map { day ->
-                        DayCell(date = day, completed = day in done, isToday = day == date)
+                        val count = counts[day] ?: 0
+                        DayCell(
+                            date = day,
+                            completed = day in done,
+                            partial = count in 1 until habit.dailyTarget,
+                            isToday = day == date,
+                        )
                     },
                 )
             }
@@ -106,19 +127,27 @@ class HomeViewModel(
     private val _userMessage = MutableStateFlow<Int?>(null)
     val userMessage: StateFlow<Int?> = _userMessage.asStateFlow()
 
-    fun addHabit(name: String, emoji: String, color: Long) {
+    fun addHabit(name: String, emoji: String, color: Long, dailyTarget: Int) {
         val trimmed = name.trim()
         if (trimmed.isEmpty()) return
-        viewModelScope.launch { repository.addHabit(trimmed, emoji, color) }
+        viewModelScope.launch { repository.addHabit(trimmed, emoji, color, dailyTarget) }
     }
 
     fun deleteHabit(habitId: Long) {
         viewModelScope.launch { repository.deleteHabit(habitId) }
     }
 
-    fun toggleCompletion(card: HabitCardUi) {
+    /**
+     * One tap on the check button: logs one more completion, or — once the
+     * target is reached — undoes the last log so mistakes are reversible.
+     */
+    fun tap(card: HabitCardUi) {
         viewModelScope.launch {
-            repository.setCompleted(card.habit.id, uiState.value.today, !card.completedToday)
+            if (card.completedToday) {
+                repository.decrement(card.habit.id, uiState.value.today)
+            } else {
+                repository.increment(card.habit.id, uiState.value.today)
+            }
         }
     }
 
@@ -141,8 +170,28 @@ class HomeViewModel(
     fun setReminderTime(hour: Int, minute: Int) {
         viewModelScope.launch {
             settings.setReminderTime(hour, minute)
-            if (reminder.value?.enabled == true) {
+            if (settings.reminder.first().enabled) {
                 reminderScheduler.schedule(hour, minute)
+            }
+        }
+    }
+
+    fun setNudgesEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            settings.setNudgesEnabled(enabled)
+            if (enabled) {
+                reminderScheduler.scheduleNudges(settings.reminder.first().nudgeIntervalHours)
+            } else {
+                reminderScheduler.cancelNudges()
+            }
+        }
+    }
+
+    fun setNudgeInterval(hours: Int) {
+        viewModelScope.launch {
+            settings.setNudgeIntervalHours(hours)
+            if (settings.reminder.first().nudgesEnabled) {
+                reminderScheduler.scheduleNudges(hours)
             }
         }
     }

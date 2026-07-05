@@ -49,8 +49,9 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           cp app/build/outputs/apk/debug/app-debug.apk habit-tracker.apk
-          gh release create v1.0 --repo "$GITHUB_REPOSITORY" \
-            --title "Habit Tracker v1.0" \
-            --notes "Debug build of the Habit Tracker app. Download habit-tracker.apk below and open it on your Android device to install." \
+          gh release delete v1.0 --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
+          gh release create latest --repo "$GITHUB_REPOSITORY" \
+            --title "Habit Tracker (latest build)" \
+            --notes "Debug build of the Habit Tracker app, updated on every push. Download habit-tracker.apk below and open it on your Android device to install." \
             --target "$GITHUB_SHA" || true
-          gh release upload v1.0 habit-tracker.apk --repo "$GITHUB_REPOSITORY" --clobber
+          gh release upload latest habit-tracker.apk --repo "$GITHUB_REPOSITORY" --clobber

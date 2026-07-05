@@ -25,6 +25,24 @@ class ReminderScheduler(private val context: Context) {
         WorkManager.getInstance(context).cancelUniqueWork(WORK_NAME)
     }
 
+    /** Repeating check-ins during the day while habits are still pending. */
+    fun scheduleNudges(intervalHours: Int) {
+        val request = PeriodicWorkRequestBuilder<NudgeWorker>(
+            Duration.ofHours(intervalHours.toLong().coerceAtLeast(1L))
+        )
+            .setInitialDelay(Duration.ofHours(intervalHours.toLong().coerceAtLeast(1L)))
+            .build()
+        WorkManager.getInstance(context).enqueueUniquePeriodicWork(
+            NUDGE_WORK_NAME,
+            ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE,
+            request,
+        )
+    }
+
+    fun cancelNudges() {
+        WorkManager.getInstance(context).cancelUniqueWork(NUDGE_WORK_NAME)
+    }
+
     private fun delayUntilNext(hour: Int, minute: Int): Duration {
         val now = LocalDateTime.now()
         val todayAtTime = now.toLocalDate().atTime(LocalTime.of(hour, minute))
@@ -34,5 +52,6 @@ class ReminderScheduler(private val context: Context) {
 
     companion object {
         private const val WORK_NAME = "daily_reminder"
+        private const val NUDGE_WORK_NAME = "habit_nudges"
     }
 }

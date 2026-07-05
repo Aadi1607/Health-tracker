@@ -1,5 +1,6 @@
 package io.github.aadi1607.habittracker.data.db
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -13,4 +14,7 @@ data class Habit(
     val color: Long,
     /** Epoch millis when the habit was created. */
     val createdAt: Long,
+    /** How many times per day this habit should be done (e.g. 8 glasses of water). */
+    @ColumnInfo(defaultValue = "1")
+    val dailyTarget: Int = 1,
 )

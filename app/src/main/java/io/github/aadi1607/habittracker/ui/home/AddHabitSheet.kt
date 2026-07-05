@@ -47,16 +47,19 @@ private val EmojiChoices = listOf(
     "🎨", "🎸", "🌱", "💊", "🙏", "💻",
 )
 
+private val TargetChoices = listOf(1, 2, 3, 4, 5, 6, 8, 10, 12)
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun AddHabitSheet(
     onDismiss: () -> Unit,
-    onSave: (name: String, emoji: String, color: Long) -> Unit,
+    onSave: (name: String, emoji: String, color: Long, dailyTarget: Int) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     var name by rememberSaveable { mutableStateOf("") }
     var emojiIndex by rememberSaveable { mutableIntStateOf(0) }
     var colorIndex by rememberSaveable { mutableIntStateOf(0) }
+    var targetIndex by rememberSaveable { mutableIntStateOf(0) }
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(
@@ -146,10 +149,62 @@ fun AddHabitSheet(
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = stringResource(R.string.times_per_day),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Text(
+                text = stringResource(R.string.times_per_day_hint),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
+                TargetChoices.forEachIndexed { index, target ->
+                    val selected = index == targetIndex
+                    Box(
+                        modifier = Modifier
+                            .size(44.dp)
+                            .background(
+                                color = if (selected) {
+                                    MaterialTheme.colorScheme.primary
+                                } else {
+                                    MaterialTheme.colorScheme.surfaceContainerHigh
+                                },
+                                shape = CircleShape,
+                            )
+                            .selectable(selected = selected, onClick = { targetIndex = index }),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text(
+                            text = target.toString(),
+                            textAlign = TextAlign.Center,
+                            color = if (selected) {
+                                MaterialTheme.colorScheme.onPrimary
+                            } else {
+                                MaterialTheme.colorScheme.onSurface
+                            },
+                            style = MaterialTheme.typography.titleMedium,
+                        )
+                    }
+                }
+            }
             Spacer(modifier = Modifier.height(28.dp))
 
             Button(
-                onClick = { onSave(name, EmojiChoices[emojiIndex], HabitPalette[colorIndex]) },
+                onClick = {
+                    onSave(
+                        name,
+                        EmojiChoices[emojiIndex],
+                        HabitPalette[colorIndex],
+                        TargetChoices[targetIndex],
+                    )
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(52.dp),

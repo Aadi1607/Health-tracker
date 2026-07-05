@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Habit Tracker</string>
+    <string name="home_title">Today</string>
+    <string name="progress_done">%1$d of %2$d done</string>
+
+    <string name="add_habit_title">New habit</string>
+    <string name="habit_name_label">Name</string>
+    <string name="habit_name_hint">Drink water</string>
+    <string name="pick_emoji">Pick an icon</string>
+    <string name="pick_color">Pick a color</string>
+    <string name="color_selected">Selected color</string>
+    <string name="save_habit">Save habit</string>
+
+    <string name="no_streak_yet">Start your streak today</string>
+    <plurals name="streak_days">
+        <item quantity="one">%d day streak</item>
+        <item quantity="other">%d day streak</item>
+    </plurals>
+
+    <string name="mark_done">Mark %1$s as done</string>
+    <string name="mark_not_done">Mark %1$s as not done</string>
+
+    <string name="delete">Delete</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">OK</string>
+    <string name="back">Back</string>
+    <string name="delete_habit_title">Delete habit?</string>
+    <string name="delete_habit_message">“%1$s” and its whole history will be removed. This cannot be undone.</string>
+
+    <string name="empty_emoji" translatable="false">🌱</string>
+    <string name="empty_title">Grow your first habit</string>
+    <string name="empty_message">Small steps, done daily, become big changes. Add a habit and start your first streak.</string>
+    <string name="empty_cta">Add your first habit</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="dynamic_color">Material You colors</string>
+    <string name="dynamic_color_summary">Use colors from your wallpaper</string>
+    <string name="dynamic_color_unavailable">Available on Android 12 and newer</string>
+    <string name="daily_reminder">Daily reminder</string>
+    <string name="daily_reminder_summary">A nudge if habits are still pending</string>
+    <string name="reminder_time">Reminder time</string>
+    <string name="export_data">Export JSON</string>
+    <string name="import_data">Import JSON</string>
+    <string name="export_success">Backup exported</string>
+    <string name="export_failure">Export failed</string>
+    <string name="import_success">Backup imported</string>
+    <string name="import_failure">Import failed — not a valid backup file</string>
+
+    <string name="stats_title">Statistics</string>
+    <string name="current_streak">Current streak</string>
+    <string name="best_streak">Best streak</string>
+    <string name="completion_rate">Completion</string>
+    <string name="completion_rate_value">%1$d%%</string>
+    <string name="previous_month">Previous month</string>
+    <string name="next_month">Next month</string>
+    <string name="month_year" translatable="false">%1$s %2$d</string>
+    <plurals name="total_completions">
+        <item quantity="one">%d completion recorded all time</item>
+        <item quantity="other">%d completions recorded all time</item>
+    </plurals>
+
+    <string name="notification_channel_name">Daily reminders</string>
+    <string name="notification_channel_description">Reminds you about habits that are still pending today</string>
+    <string name="reminder_notification_title">Keep your streak alive</string>
+    <plurals name="reminder_notification_text">
+        <item quantity="one">%d habit is still waiting for you today</item>
+        <item quantity="other">%d habits are still waiting for you today</item>
+    </plurals>
+</resources>

@@ -26,6 +26,9 @@ class HabitRepository(private val dao: HabitDao) {
         )
     }
 
+    suspend fun updateHabit(habitId: Long, name: String, emoji: String, color: Long, dailyTarget: Int) =
+        dao.updateHabit(habitId, name.trim(), emoji, color, dailyTarget.coerceAtLeast(1))
+
     suspend fun deleteHabit(habitId: Long) = dao.deleteHabit(habitId)
 
     /** Logs one more completion of the habit for [date]. */
@@ -37,6 +40,10 @@ class HabitRepository(private val dao: HabitDao) {
     suspend fun getHabits(): List<Habit> = dao.getHabits()
 
     suspend fun getCompletions(): List<Completion> = dao.getCompletions()
+
+    /** Today's log count per habit id, for the widget. */
+    suspend fun getCountsOn(date: LocalDate): Map<Long, Int> =
+        dao.getCompletionsOn(date.toString()).associate { it.habitId to it.count }
 
     /** Habits that have not reached their daily target on [date], with progress. */
     suspend fun getPendingOn(date: LocalDate): List<PendingHabit> {

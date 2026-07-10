@@ -2,6 +2,7 @@ package io.github.aadi1607.habittracker.ui.home
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -24,6 +27,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -38,9 +42,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -58,6 +64,8 @@ fun HomeRoute(
 
     var showAddSheet by rememberSaveable { mutableStateOf(false) }
     var showSettingsSheet by rememberSaveable { mutableStateOf(false) }
+    var actionsHabitId by rememberSaveable { mutableStateOf<Long?>(null) }
+    var editingHabitId by rememberSaveable { mutableStateOf<Long?>(null) }
     var habitIdToDelete by rememberSaveable { mutableStateOf<Long?>(null) }
 
     val snackbarHostState = remember { SnackbarHostState() }
@@ -114,7 +122,7 @@ fun HomeRoute(
                     HabitCard(
                         card = card,
                         onTap = { viewModel.tap(card) },
-                        onLongPress = { habitIdToDelete = card.habit.id },
+                        onLongPress = { actionsHabitId = card.habit.id },
                         modifier = Modifier.padding(horizontal = 16.dp),
                     )
                 }
@@ -124,11 +132,40 @@ fun HomeRoute(
     }
 
     if (showAddSheet) {
-        AddHabitSheet(
+        HabitFormSheet(
+            initial = null,
             onDismiss = { showAddSheet = false },
             onSave = { name, emoji, color, dailyTarget ->
                 viewModel.addHabit(name, emoji, color, dailyTarget)
                 showAddSheet = false
+            },
+        )
+    }
+
+    val editingHabit = state.habits.firstOrNull { it.habit.id == editingHabitId }?.habit
+    if (editingHabit != null) {
+        HabitFormSheet(
+            initial = editingHabit,
+            onDismiss = { editingHabitId = null },
+            onSave = { name, emoji, color, dailyTarget ->
+                viewModel.updateHabit(editingHabit.id, name, emoji, color, dailyTarget)
+                editingHabitId = null
+            },
+        )
+    }
+
+    val actionsHabit = state.habits.firstOrNull { it.habit.id == actionsHabitId }?.habit
+    if (actionsHabit != null) {
+        HabitActionsSheet(
+            habitName = actionsHabit.name,
+            onDismiss = { actionsHabitId = null },
+            onEdit = {
+                editingHabitId = actionsHabit.id
+                actionsHabitId = null
+            },
+            onDelete = {
+                habitIdToDelete = actionsHabit.id
+                actionsHabitId = null
             },
         )
     }
@@ -177,6 +214,71 @@ fun HomeRoute(
     }
 }
 
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+private fun HabitActionsSheet(
+    habitName: String,
+    onDismiss: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true),
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .navigationBarsPadding()
+                .padding(start = 24.dp, end = 24.dp, bottom = 24.dp),
+        ) {
+            Text(
+                text = habitName,
+                style = MaterialTheme.typography.titleLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onEdit)
+                    .padding(vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = null,
+                )
+                Spacer(modifier = Modifier.padding(start = 16.dp))
+                Text(
+                    text = stringResource(R.string.edit_habit_title),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onDelete)
+                    .padding(vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error,
+                )
+                Spacer(modifier = Modifier.padding(start = 16.dp))
+                Text(
+                    text = stringResource(R.string.delete),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
+    }
+}
+
 @Composable
 private fun HomeHeader(
     doneToday: Int,
@@ -198,10 +300,19 @@ private fun HomeHeader(
                     style = MaterialTheme.typography.headlineMedium,
                 )
                 if (total > 0) {
+                    val allDone = doneToday == total
                     Text(
-                        text = stringResource(R.string.progress_done, doneToday, total),
+                        text = if (allDone) {
+                            stringResource(R.string.all_done_header)
+                        } else {
+                            stringResource(R.string.progress_done, doneToday, total)
+                        },
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = if (allDone) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
                     )
                 }
             }

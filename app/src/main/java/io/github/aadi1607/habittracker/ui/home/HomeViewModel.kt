@@ -16,6 +16,8 @@ import io.github.aadi1607.habittracker.data.backup.BackupManager
 import io.github.aadi1607.habittracker.data.db.Habit
 import io.github.aadi1607.habittracker.domain.Streaks
 import io.github.aadi1607.habittracker.reminder.ReminderScheduler
+import io.github.aadi1607.habittracker.widget.HabitWidget
+import androidx.glance.appwidget.updateAll
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -70,11 +72,16 @@ data class HomeUiState(
 }
 
 class HomeViewModel(
+    private val application: HabitApplication,
     private val repository: HabitRepository,
     private val settings: SettingsRepository,
     private val reminderScheduler: ReminderScheduler,
     private val backupManager: BackupManager,
 ) : ViewModel() {
+
+    private suspend fun refreshWidget() {
+        runCatching { HabitWidget().updateAll(application) }
+    }
 
     /** Re-emits the current date just after every midnight so streaks roll over. */
     private val today = flow {
@@ -130,11 +137,26 @@ class HomeViewModel(
     fun addHabit(name: String, emoji: String, color: Long, dailyTarget: Int) {
         val trimmed = name.trim()
         if (trimmed.isEmpty()) return
-        viewModelScope.launch { repository.addHabit(trimmed, emoji, color, dailyTarget) }
+        viewModelScope.launch {
+            repository.addHabit(trimmed, emoji, color, dailyTarget)
+            refreshWidget()
+        }
+    }
+
+    fun updateHabit(habitId: Long, name: String, emoji: String, color: Long, dailyTarget: Int) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        viewModelScope.launch {
+            repository.updateHabit(habitId, trimmed, emoji, color, dailyTarget)
+            refreshWidget()
+        }
     }
 
     fun deleteHabit(habitId: Long) {
-        viewModelScope.launch { repository.deleteHabit(habitId) }
+        viewModelScope.launch {
+            repository.deleteHabit(habitId)
+            refreshWidget()
+        }
     }
 
     /**
@@ -148,8 +170,12 @@ class HomeViewModel(
             } else {
                 repository.increment(card.habit.id, uiState.value.today)
             }
+            refreshWidget()
         }
     }
+
+    /** True when Android is currently blocking exact alarms for this app. */
+    fun needsExactAlarmPermission(): Boolean = !reminderScheduler.canScheduleExact()
 
     fun setDynamicColor(enabled: Boolean) {
         viewModelScope.launch { settings.setDynamicColor(enabled) }
@@ -160,9 +186,9 @@ class HomeViewModel(
             settings.setReminderEnabled(enabled)
             if (enabled) {
                 val current = settings.reminder.first()
-                reminderScheduler.schedule(current.hour, current.minute)
+                reminderScheduler.scheduleDaily(current.hour, current.minute)
             } else {
-                reminderScheduler.cancel()
+                reminderScheduler.cancelDaily()
             }
         }
     }
@@ -171,7 +197,7 @@ class HomeViewModel(
         viewModelScope.launch {
             settings.setReminderTime(hour, minute)
             if (settings.reminder.first().enabled) {
-                reminderScheduler.schedule(hour, minute)
+                reminderScheduler.scheduleDaily(hour, minute)
             }
         }
     }
@@ -180,7 +206,7 @@ class HomeViewModel(
         viewModelScope.launch {
             settings.setNudgesEnabled(enabled)
             if (enabled) {
-                reminderScheduler.scheduleNudges(settings.reminder.first().nudgeIntervalHours)
+                reminderScheduler.scheduleNextNudge(settings.reminder.first().nudgeIntervalHours)
             } else {
                 reminderScheduler.cancelNudges()
             }
@@ -191,7 +217,7 @@ class HomeViewModel(
         viewModelScope.launch {
             settings.setNudgeIntervalHours(hours)
             if (settings.reminder.first().nudgesEnabled) {
-                reminderScheduler.scheduleNudges(hours)
+                reminderScheduler.scheduleNextNudge(hours)
             }
         }
     }
@@ -207,6 +233,7 @@ class HomeViewModel(
         viewModelScope.launch {
             val result = backupManager.importFrom(uri)
             showMessage(if (result.isSuccess) R.string.import_success else R.string.import_failure)
+            refreshWidget()
         }
     }
 
@@ -223,6 +250,7 @@ class HomeViewModel(
             initializer {
                 val app = this[APPLICATION_KEY] as HabitApplication
                 HomeViewModel(
+                    application = app,
                     repository = app.container.repository,
                     settings = app.container.settings,
                     reminderScheduler = app.container.reminderScheduler,

@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Habit Tracker</string>
+    <string name="app_name">HealthTrack</string>
     <string name="home_title">Today</string>
     <string name="progress_done">%1$d of %2$d done</string>
+    <string name="all_done_header">All done for today 🎉</string>
 
     <string name="add_habit_title">New habit</string>
+    <string name="edit_habit_title">Edit habit</string>
+    <string name="update_habit">Save changes</string>
     <string name="habit_name_label">Name</string>
     <string name="habit_name_hint">Drink water</string>
     <string name="pick_emoji">Pick an icon</string>
@@ -47,6 +50,8 @@
     <string name="nudges">Frequent nudges</string>
     <string name="nudges_summary">Repeat reminders during the day (8:00–22:00) while habits like drinking water are pending</string>
     <string name="every_n_hours">Every %1$d h</string>
+    <string name="exact_alarms_summary">Allow exact alarms so reminders arrive right on time</string>
+    <string name="allow">Allow</string>
     <string name="export_data">Export JSON</string>
     <string name="import_data">Import JSON</string>
     <string name="export_success">Backup exported</string>
@@ -74,6 +79,11 @@
     <string name="reminder_notification_title">Keep your streak alive</string>
     <string name="nudge_notification_title">Habit check-in 💧</string>
     <string name="habit_progress_line" translatable="false">%1$s %2$s (%3$d/%4$d)</string>
+    <string name="log_one">+1 %1$s %2$s</string>
+    <string name="widget_title">Today</string>
+    <string name="widget_empty">No habits yet — open HealthTrack to add one</string>
+    <string name="widget_all_done">All done 🎉</string>
+    <string name="widget_description">Today\'s habits with progress; tap a habit to log it</string>
     <plurals name="reminder_notification_text">
         <item quantity="one">%d habit is still waiting for you today</item>
         <item quantity="other">%d habits are still waiting for you today</item>

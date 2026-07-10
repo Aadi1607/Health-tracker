@@ -30,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,6 +40,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.aadi1607.habittracker.R
+import io.github.aadi1607.habittracker.data.db.Habit
 import io.github.aadi1607.habittracker.ui.theme.HabitPalette
 
 private val EmojiChoices = listOf(
@@ -51,15 +53,38 @@ private val TargetChoices = listOf(1, 2, 3, 4, 5, 6, 8, 10, 12)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun AddHabitSheet(
+fun HabitFormSheet(
+    initial: Habit?,
     onDismiss: () -> Unit,
     onSave: (name: String, emoji: String, color: Long, dailyTarget: Int) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var name by rememberSaveable { mutableStateOf("") }
-    var emojiIndex by rememberSaveable { mutableIntStateOf(0) }
-    var colorIndex by rememberSaveable { mutableIntStateOf(0) }
-    var targetIndex by rememberSaveable { mutableIntStateOf(0) }
+    // When editing a habit whose emoji is not in the presets (e.g. imported),
+    // surface it as an extra first choice so the selection stays intact.
+    val emojis = remember(initial) {
+        if (initial != null && initial.emoji !in EmojiChoices) {
+            listOf(initial.emoji) + EmojiChoices
+        } else {
+            EmojiChoices
+        }
+    }
+    var name by rememberSaveable { mutableStateOf(initial?.name ?: "") }
+    var emojiIndex by rememberSaveable {
+        mutableIntStateOf(if (initial == null) 0 else emojis.indexOf(initial.emoji).coerceAtLeast(0))
+    }
+    var colorIndex by rememberSaveable {
+        mutableIntStateOf(if (initial == null) 0 else HabitPalette.indexOf(initial.color).coerceAtLeast(0))
+    }
+    var targetIndex by rememberSaveable {
+        mutableIntStateOf(
+            if (initial == null) {
+                0
+            } else {
+                TargetChoices.indexOf(initial.dailyTarget).takeIf { it >= 0 }
+                    ?: TargetChoices.indexOfLast { it <= initial.dailyTarget }.coerceAtLeast(0)
+            }
+        )
+    }
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(
@@ -69,7 +94,9 @@ fun AddHabitSheet(
                 .padding(bottom = 24.dp),
         ) {
             Text(
-                text = stringResource(R.string.add_habit_title),
+                text = stringResource(
+                    if (initial == null) R.string.add_habit_title else R.string.edit_habit_title
+                ),
                 style = MaterialTheme.typography.titleLarge,
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -93,7 +120,7 @@ fun AddHabitSheet(
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                EmojiChoices.forEachIndexed { index, emoji ->
+                emojis.forEachIndexed { index, emoji ->
                     val selected = index == emojiIndex
                     Box(
                         modifier = Modifier
@@ -200,7 +227,7 @@ fun AddHabitSheet(
                 onClick = {
                     onSave(
                         name,
-                        EmojiChoices[emojiIndex],
+                        emojis[emojiIndex],
                         HabitPalette[colorIndex],
                         TargetChoices[targetIndex],
                     )
@@ -210,7 +237,11 @@ fun AddHabitSheet(
                     .height(52.dp),
                 enabled = name.isNotBlank(),
             ) {
-                Text(stringResource(R.string.save_habit))
+                Text(
+                    stringResource(
+                        if (initial == null) R.string.save_habit else R.string.update_habit
+                    )
+                )
             }
         }
     }

@@ -36,6 +36,12 @@ interface HabitDao {
     @Insert
     suspend fun insertHabit(habit: Habit): Long
 
+    @Query(
+        "UPDATE habits SET name = :name, emoji = :emoji, color = :color, " +
+            "dailyTarget = :dailyTarget WHERE id = :habitId"
+    )
+    suspend fun updateHabit(habitId: Long, name: String, emoji: String, color: Long, dailyTarget: Int)
+
     @Query("DELETE FROM habits WHERE id = :habitId")
     suspend fun deleteHabit(habitId: Long)
 

@@ -31,6 +31,14 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val REMINDER_MINUTE = intPreferencesKey("reminder_minute")
         val NUDGES_ENABLED = booleanPreferencesKey("nudges_enabled")
         val NUDGE_INTERVAL_HOURS = intPreferencesKey("nudge_interval_hours")
+        val LOGGED_IN = booleanPreferencesKey("logged_in")
+    }
+
+    val loggedIn: Flow<Boolean> =
+        dataStore.data.map { it[Keys.LOGGED_IN] ?: false }
+
+    suspend fun setLoggedIn(loggedIn: Boolean) {
+        dataStore.edit { it[Keys.LOGGED_IN] = loggedIn }
     }
 
     val dynamicColor: Flow<Boolean> =

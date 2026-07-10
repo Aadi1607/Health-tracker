@@ -52,6 +52,13 @@
     <string name="empty_message">Small steps, done daily, become big changes. Add a habit and start your first streak.</string>
     <string name="empty_cta">Add your first habit</string>
 
+    <string name="login_tagline">Track today, live better</string>
+    <string name="username_label">Username</string>
+    <string name="password_label">Password</string>
+    <string name="login_button">Log in</string>
+    <string name="login_error">Invalid username or password</string>
+    <string name="logout">Log out</string>
+
     <string name="settings_title">Settings</string>
     <string name="dynamic_color">Material You colors</string>
     <string name="dynamic_color_summary">Use colors from your wallpaper</string>

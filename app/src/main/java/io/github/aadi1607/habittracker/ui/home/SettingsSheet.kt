@@ -22,7 +22,10 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -68,6 +71,7 @@ fun SettingsSheet(
     onNudgeIntervalChange: (Int) -> Unit,
     onExport: () -> Unit,
     onImport: () -> Unit,
+    onLogout: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val context = LocalContext.current
@@ -307,6 +311,28 @@ fun SettingsSheet(
                 OutlinedButton(onClick = onImport, modifier = Modifier.weight(1f)) {
                     Text(stringResource(R.string.import_data))
                 }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            HorizontalDivider()
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onLogout)
+                    .padding(vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.error,
+                )
+                Spacer(modifier = Modifier.weight(0.05f))
+                Text(
+                    text = stringResource(R.string.logout),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.error,
+                )
             }
         }
     }

@@ -2,6 +2,8 @@ package io.github.aadi1607.habittracker.ui.home
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -127,7 +129,9 @@ fun HomeRoute(
                         card = card,
                         onTap = { viewModel.tap(card) },
                         onLongPress = { actionsHabitId = card.habit.id },
-                        modifier = Modifier.padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .animateItem()
+                            .padding(horizontal = 16.dp),
                     )
                 }
                 item { Spacer(modifier = Modifier.height(88.dp)) }
@@ -193,6 +197,10 @@ fun HomeRoute(
             onNudgeIntervalChange = viewModel::setNudgeInterval,
             onExport = { exportLauncher.launch("habit-tracker-backup.json") },
             onImport = { importLauncher.launch(arrayOf("application/json")) },
+            onLogout = {
+                showSettingsSheet = false
+                viewModel.logout()
+            },
         )
     }
 
@@ -378,8 +386,13 @@ private fun HomeHeader(
         }
         if (total > 0) {
             Spacer(modifier = Modifier.height(12.dp))
+            val animatedProgress by animateFloatAsState(
+                targetValue = progress,
+                animationSpec = tween(durationMillis = 500),
+                label = "headerProgress",
+            )
             LinearProgressIndicator(
-                progress = { progress },
+                progress = { animatedProgress },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(end = 12.dp)

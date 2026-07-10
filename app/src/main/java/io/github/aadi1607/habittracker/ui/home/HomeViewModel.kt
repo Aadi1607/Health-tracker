@@ -217,6 +217,10 @@ class HomeViewModel(
     /** True when Android is currently blocking exact alarms for this app. */
     fun needsExactAlarmPermission(): Boolean = !reminderScheduler.canScheduleExact()
 
+    fun logout() {
+        viewModelScope.launch { settings.setLoggedIn(false) }
+    }
+
     fun setDynamicColor(enabled: Boolean) {
         viewModelScope.launch { settings.setDynamicColor(enabled) }
     }

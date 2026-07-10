@@ -57,10 +57,8 @@ class HabitWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         val app = context.applicationContext as HabitApplication
-        val today = LocalDate.now()
-        val habits = app.container.repository.getHabits()
-        val counts = app.container.repository.getCountsOn(today)
-        val rows = habits.map { WidgetRow(it, counts[it.id] ?: 0) }
+        val rows = app.container.repository.getProgressOn(LocalDate.now())
+            .map { WidgetRow(it.habit, it.count) }
 
         provideContent {
             WidgetContent(rows)

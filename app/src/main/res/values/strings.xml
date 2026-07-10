@@ -8,11 +8,18 @@
     <string name="add_habit_title">New habit</string>
     <string name="edit_habit_title">Edit habit</string>
     <string name="update_habit">Save changes</string>
+    <string name="move_up">Move up</string>
+    <string name="move_down">Move down</string>
     <string name="habit_name_label">Name</string>
     <string name="habit_name_hint">Drink water</string>
     <string name="pick_emoji">Pick an icon</string>
+    <string name="goal_label">Goal</string>
+    <string name="per_day">Per day</string>
+    <string name="per_week">Per week</string>
     <string name="times_per_day">Times per day</string>
     <string name="times_per_day_hint">e.g. 8 for drinking water through the day</string>
+    <string name="times_per_week">Times per week</string>
+    <string name="times_per_week_hint">e.g. 3 for gym sessions spread over the week</string>
     <string name="pick_color">Pick a color</string>
     <string name="color_selected">Selected color</string>
     <string name="save_habit">Save habit</string>
@@ -24,6 +31,11 @@
         <item quantity="one">%d day streak</item>
         <item quantity="other">%d day streak</item>
     </plurals>
+    <plurals name="streak_weeks">
+        <item quantity="one">%d week streak</item>
+        <item quantity="other">%d week streak</item>
+    </plurals>
+    <string name="card_subtitle_with_count_week">%1$d of %2$d this week · %3$s</string>
 
     <string name="mark_done">Mark %1$s as done</string>
     <string name="mark_not_done">Mark %1$s as not done</string>

@@ -1,20 +1,28 @@
-# Habit Tracker
+# HealthTrack
 
-A native Android habit tracker built with Kotlin and Jetpack Compose (Material 3).
+A native Android habit tracker built with Kotlin and Jetpack Compose (Material 3). *Track today, live better.*
 
 ## Features
 
-- **Add habits** with a name, an emoji icon, and one of six preset colors, via a bottom-sheet form
-- **Tap-to-complete** cards with a large (56dp) check button, scale-bounce animation, and haptic feedback
-- **Streaks** that count consecutive days — a pending "today" doesn't break the streak until midnight passes
-- **7-day chain** on each card: dots for the last 7 days, consecutive completed days joined by a colored line, today's dot outlined and pulsing while pending
-- **Daily progress** header ("3 of 5 done") with a progress bar
-- **Long-press to delete** a habit, with a confirmation dialog
-- **Daily reminder** notification at a user-chosen time (WorkManager), with `POST_NOTIFICATIONS` permission handling on Android 13+
+- **Add habits** with a name, an emoji icon, one of six preset colors, and a goal: N times **per day** (8 glasses of water) or **per week** (3 gym sessions)
+- **Progress-ring check button**: each tap logs one; the ring fills and snaps into a solid check at the target, with a scale-bounce animation and haptic feedback
+- **Streaks** in the habit's own unit — consecutive days or consecutive weeks; a pending today/this-week doesn't break the streak until the period ends
+- **7-day chain** on each card: dots for the last 7 days, consecutive completed days joined by a colored line, today's dot outlined and pulsing while pending, partial days dimmed
+- **Daily progress** header with partial credit, and a confetti burst when everything is done
+- **Exact-time reminders** via AlarmManager: a daily summary at a chosen time plus optional nudges every 1–4 hours (8:00–22:00) while habits are pending; alarms survive reboots and app updates
+- **Actionable notifications**: "+1" buttons log a habit straight from the notification
+- **Home-screen widget** (Glance): today's habits with live progress, tap a row to log
+- **Long-press** a card to edit, reorder, or delete a habit
 - **Stats screen**: current/best streak and completion rate per habit, plus a monthly calendar heatmap
 - **Export / import** all data as JSON (Storage Access Framework)
 - **Dark ink-blue theme** by default (`#14161F` background, `#1C1F2B` cards) with an optional Material You dynamic color mode
 - Edge-to-edge layout, friendly empty state, state survives rotation and process death
+
+## Signing
+
+Builds are signed with the checked-in `app/signing/shared.keystore` so sideloaded
+updates always install over the previous version. This key is intentionally not
+secret — generate and use a private keystore before distributing through a store.
 
 ## Tech stack
 

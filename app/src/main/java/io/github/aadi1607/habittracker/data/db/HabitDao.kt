@@ -10,13 +10,13 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HabitDao {
 
-    @Query("SELECT * FROM habits ORDER BY createdAt ASC")
+    @Query("SELECT * FROM habits ORDER BY sortOrder ASC, createdAt ASC")
     fun observeHabits(): Flow<List<Habit>>
 
     @Query("SELECT * FROM completions")
     fun observeCompletions(): Flow<List<Completion>>
 
-    @Query("SELECT * FROM habits ORDER BY createdAt ASC")
+    @Query("SELECT * FROM habits ORDER BY sortOrder ASC, createdAt ASC")
     suspend fun getHabits(): List<Habit>
 
     @Query("SELECT * FROM completions")
@@ -38,9 +38,26 @@ interface HabitDao {
 
     @Query(
         "UPDATE habits SET name = :name, emoji = :emoji, color = :color, " +
-            "dailyTarget = :dailyTarget WHERE id = :habitId"
+            "dailyTarget = :dailyTarget, goalPeriod = :goalPeriod WHERE id = :habitId"
     )
-    suspend fun updateHabit(habitId: Long, name: String, emoji: String, color: Long, dailyTarget: Int)
+    suspend fun updateHabit(
+        habitId: Long,
+        name: String,
+        emoji: String,
+        color: Long,
+        dailyTarget: Int,
+        goalPeriod: String,
+    )
+
+    @Query("UPDATE habits SET sortOrder = :sortOrder WHERE id = :habitId")
+    suspend fun updateSortOrder(habitId: Long, sortOrder: Long)
+
+    /** Swaps the display positions of two habits. */
+    @Transaction
+    suspend fun swapSortOrders(firstId: Long, firstOrder: Long, secondId: Long, secondOrder: Long) {
+        updateSortOrder(firstId, secondOrder)
+        updateSortOrder(secondId, firstOrder)
+    }
 
     @Query("DELETE FROM habits WHERE id = :habitId")
     suspend fun deleteHabit(habitId: Long)

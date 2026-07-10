@@ -43,6 +43,38 @@ import io.github.aadi1607.habittracker.R
 import io.github.aadi1607.habittracker.data.db.Habit
 import io.github.aadi1607.habittracker.ui.theme.HabitPalette
 
+@Composable
+private fun PeriodChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .background(
+                color = if (selected) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.surfaceContainerHigh
+                },
+                shape = CircleShape,
+            )
+            .selectable(selected = selected, onClick = onClick)
+            .padding(horizontal = 20.dp, vertical = 10.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelLarge,
+            color = if (selected) {
+                MaterialTheme.colorScheme.onPrimary
+            } else {
+                MaterialTheme.colorScheme.onSurface
+            },
+        )
+    }
+}
+
 private val EmojiChoices = listOf(
     "💪", "🏃", "🚶", "🧘", "📖", "✍️",
     "💧", "🥗", "😴", "🦷", "🧹", "🎯",
@@ -56,7 +88,7 @@ private val TargetChoices = listOf(1, 2, 3, 4, 5, 6, 8, 10, 12)
 fun HabitFormSheet(
     initial: Habit?,
     onDismiss: () -> Unit,
-    onSave: (name: String, emoji: String, color: Long, dailyTarget: Int) -> Unit,
+    onSave: (name: String, emoji: String, color: Long, dailyTarget: Int, goalPeriod: String) -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     // When editing a habit whose emoji is not in the presets (e.g. imported),
@@ -85,6 +117,7 @@ fun HabitFormSheet(
             }
         )
     }
+    var weekly by rememberSaveable { mutableStateOf(initial?.isWeekly == true) }
 
     ModalBottomSheet(onDismissRequest = onDismiss, sheetState = sheetState) {
         Column(
@@ -179,11 +212,34 @@ fun HabitFormSheet(
             Spacer(modifier = Modifier.height(20.dp))
 
             Text(
-                text = stringResource(R.string.times_per_day),
+                text = stringResource(R.string.goal_label),
+                style = MaterialTheme.typography.titleMedium,
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                PeriodChip(
+                    label = stringResource(R.string.per_day),
+                    selected = !weekly,
+                    onClick = { weekly = false },
+                )
+                PeriodChip(
+                    label = stringResource(R.string.per_week),
+                    selected = weekly,
+                    onClick = { weekly = true },
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = stringResource(
+                    if (weekly) R.string.times_per_week else R.string.times_per_day
+                ),
                 style = MaterialTheme.typography.titleMedium,
             )
             Text(
-                text = stringResource(R.string.times_per_day_hint),
+                text = stringResource(
+                    if (weekly) R.string.times_per_week_hint else R.string.times_per_day_hint
+                ),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
@@ -230,6 +286,7 @@ fun HabitFormSheet(
                         emojis[emojiIndex],
                         HabitPalette[colorIndex],
                         TargetChoices[targetIndex],
+                        if (weekly) Habit.PERIOD_WEEKLY else Habit.PERIOD_DAILY,
                     )
                 },
                 modifier = Modifier

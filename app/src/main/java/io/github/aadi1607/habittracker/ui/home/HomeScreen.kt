@@ -4,6 +4,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -84,6 +87,7 @@ fun HomeRoute(
         ActivityResultContracts.OpenDocument(),
     ) { uri -> uri?.let(viewModel::importFrom) }
 
+    Box(modifier = Modifier.fillMaxSize()) {
     Scaffold(
         topBar = {
             HomeHeader(
@@ -130,13 +134,15 @@ fun HomeRoute(
             }
         }
     }
+    ConfettiOverlay(celebrate = state.allDone)
+    }
 
     if (showAddSheet) {
         HabitFormSheet(
             initial = null,
             onDismiss = { showAddSheet = false },
-            onSave = { name, emoji, color, dailyTarget ->
-                viewModel.addHabit(name, emoji, color, dailyTarget)
+            onSave = { name, emoji, color, dailyTarget, goalPeriod ->
+                viewModel.addHabit(name, emoji, color, dailyTarget, goalPeriod)
                 showAddSheet = false
             },
         )
@@ -147,24 +153,29 @@ fun HomeRoute(
         HabitFormSheet(
             initial = editingHabit,
             onDismiss = { editingHabitId = null },
-            onSave = { name, emoji, color, dailyTarget ->
-                viewModel.updateHabit(editingHabit.id, name, emoji, color, dailyTarget)
+            onSave = { name, emoji, color, dailyTarget, goalPeriod ->
+                viewModel.updateHabit(editingHabit.id, name, emoji, color, dailyTarget, goalPeriod)
                 editingHabitId = null
             },
         )
     }
 
-    val actionsHabit = state.habits.firstOrNull { it.habit.id == actionsHabitId }?.habit
-    if (actionsHabit != null) {
+    val actionsCard = state.habits.firstOrNull { it.habit.id == actionsHabitId }
+    if (actionsCard != null) {
+        val index = state.habits.indexOf(actionsCard)
         HabitActionsSheet(
-            habitName = actionsHabit.name,
+            habitName = actionsCard.habit.name,
+            canMoveUp = index > 0,
+            canMoveDown = index < state.habits.lastIndex,
             onDismiss = { actionsHabitId = null },
             onEdit = {
-                editingHabitId = actionsHabit.id
+                editingHabitId = actionsCard.habit.id
                 actionsHabitId = null
             },
+            onMoveUp = { viewModel.moveHabit(actionsCard, up = true) },
+            onMoveDown = { viewModel.moveHabit(actionsCard, up = false) },
             onDelete = {
-                habitIdToDelete = actionsHabit.id
+                habitIdToDelete = actionsCard.habit.id
                 actionsHabitId = null
             },
         )
@@ -218,8 +229,12 @@ fun HomeRoute(
 @Composable
 private fun HabitActionsSheet(
     habitName: String,
+    canMoveUp: Boolean,
+    canMoveDown: Boolean,
     onDismiss: () -> Unit,
     onEdit: () -> Unit,
+    onMoveUp: () -> Unit,
+    onMoveDown: () -> Unit,
     onDelete: () -> Unit,
 ) {
     ModalBottomSheet(
@@ -255,6 +270,38 @@ private fun HabitActionsSheet(
                     text = stringResource(R.string.edit_habit_title),
                     style = MaterialTheme.typography.titleMedium,
                 )
+            }
+            if (canMoveUp) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onMoveUp)
+                        .padding(vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(imageVector = Icons.Default.KeyboardArrowUp, contentDescription = null)
+                    Spacer(modifier = Modifier.padding(start = 16.dp))
+                    Text(
+                        text = stringResource(R.string.move_up),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
+            }
+            if (canMoveDown) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(onClick = onMoveDown)
+                        .padding(vertical = 14.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(imageVector = Icons.Default.KeyboardArrowDown, contentDescription = null)
+                    Spacer(modifier = Modifier.padding(start = 16.dp))
+                    Text(
+                        text = stringResource(R.string.move_down),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                }
             }
             Row(
                 modifier = Modifier

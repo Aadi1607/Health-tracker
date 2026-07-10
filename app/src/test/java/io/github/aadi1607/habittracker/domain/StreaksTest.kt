@@ -96,4 +96,72 @@ class StreaksTest {
         assertEquals(0f, Streaks.completionRate(emptySet(), today, today), 0.0001f)
         assertEquals(1f, Streaks.completionRate(days(0), today, today), 0.0001f)
     }
+
+    // --- weekly goals ---
+    // 2026-07-05 is a Sunday; its ISO week starts Monday 2026-06-29.
+
+    @Test
+    fun `weekStart returns the ISO monday`() {
+        assertEquals(LocalDate.of(2026, 6, 29), Streaks.weekStart(today))
+        assertEquals(LocalDate.of(2026, 6, 29), Streaks.weekStart(LocalDate.of(2026, 6, 29)))
+    }
+
+    @Test
+    fun `weekly streak counts current week once target met`() {
+        // 3 logs this week, 3 last week, target 3.
+        val counts = mapOf(
+            today to 1, today.minusDays(1) to 1, today.minusDays(2) to 1,
+            today.minusDays(7) to 2, today.minusDays(8) to 1,
+        )
+        assertEquals(2, Streaks.currentWeeklyStreak(counts, 3, today))
+    }
+
+    @Test
+    fun `pending current week does not break weekly streak`() {
+        // Only 1 log this week (target 3), but last two weeks met the target.
+        val counts = mapOf(
+            today to 1,
+            today.minusDays(7) to 3,
+            today.minusDays(14) to 3,
+        )
+        assertEquals(2, Streaks.currentWeeklyStreak(counts, 3, today))
+    }
+
+    @Test
+    fun `weekly streak broken by a missed week`() {
+        val counts = mapOf(
+            today.minusDays(7) to 3,   // last week met
+            today.minusDays(21) to 3,  // three weeks ago met, two weeks ago missed
+        )
+        assertEquals(1, Streaks.currentWeeklyStreak(counts, 3, today))
+    }
+
+    @Test
+    fun `multiple logs on one day count toward the weekly target`() {
+        val counts = mapOf(today to 3)
+        assertEquals(1, Streaks.currentWeeklyStreak(counts, 3, today))
+    }
+
+    @Test
+    fun `best weekly streak finds longest run`() {
+        val counts = mapOf(
+            today to 3,
+            today.minusDays(7) to 3,
+            today.minusDays(21) to 3,
+            today.minusDays(28) to 3,
+            today.minusDays(35) to 3,
+        )
+        assertEquals(3, Streaks.bestWeeklyStreak(counts, 3))
+    }
+
+    @Test
+    fun `weekly completion rate over habit lifetime`() {
+        // Created 3 weeks ago (4 ISO weeks including current); 2 weeks met target.
+        val createdOn = today.minusDays(21)
+        val counts = mapOf(
+            today.minusDays(7) to 3,
+            today.minusDays(14) to 3,
+        )
+        assertEquals(0.5f, Streaks.weeklyCompletionRate(counts, 3, createdOn, today), 0.0001f)
+    }
 }

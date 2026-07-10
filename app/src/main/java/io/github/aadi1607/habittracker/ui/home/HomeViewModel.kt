@@ -44,12 +44,13 @@ data class DayCell(
 
 data class HabitCardUi(
     val habit: Habit,
-    /** Times logged today, 0..dailyTarget (and possibly beyond). */
-    val todayCount: Int,
+    /** Logs in the current period: today for daily habits, this week for weekly ones. */
+    val periodCount: Int,
+    /** Streak in the habit's own unit — days for daily, weeks for weekly. */
     val streak: Int,
     val week: List<DayCell>,
 ) {
-    val completedToday: Boolean get() = todayCount >= habit.dailyTarget
+    val completedNow: Boolean get() = periodCount >= habit.dailyTarget
 }
 
 data class HomeUiState(
@@ -59,6 +60,7 @@ data class HomeUiState(
     val loaded: Boolean = false,
 ) {
     val total: Int get() = habits.size
+    val allDone: Boolean get() = total > 0 && doneToday == total
 
     /** Header bar progress with partial credit for multi-target habits. */
     val progress: Float
@@ -66,7 +68,7 @@ data class HomeUiState(
             0f
         } else {
             habits.map {
-                it.todayCount.coerceAtMost(it.habit.dailyTarget).toFloat() / it.habit.dailyTarget
+                it.periodCount.coerceAtMost(it.habit.dailyTarget).toFloat() / it.habit.dailyTarget
             }.sum() / total
         }
 }
@@ -101,25 +103,44 @@ class HomeViewModel(
             val lastSeven = Streaks.lastDays(date, 7)
             val cards = habits.map { habit ->
                 val counts = countsByHabit[habit.id].orEmpty()
-                val done = counts.filterValues { it >= habit.dailyTarget }.keys
-                HabitCardUi(
-                    habit = habit,
-                    todayCount = counts[date] ?: 0,
-                    streak = Streaks.currentStreak(done, date),
-                    week = lastSeven.map { day ->
-                        val count = counts[day] ?: 0
-                        DayCell(
-                            date = day,
-                            completed = day in done,
-                            partial = count in 1 until habit.dailyTarget,
-                            isToday = day == date,
-                        )
-                    },
-                )
+                if (habit.isWeekly) {
+                    // Weekly goal: progress is this ISO week's total; every logged
+                    // day lights up in the chain.
+                    val weekSum = Streaks.weeklySums(counts)[Streaks.weekStart(date)] ?: 0
+                    HabitCardUi(
+                        habit = habit,
+                        periodCount = weekSum,
+                        streak = Streaks.currentWeeklyStreak(counts, habit.dailyTarget, date),
+                        week = lastSeven.map { day ->
+                            DayCell(
+                                date = day,
+                                completed = (counts[day] ?: 0) > 0,
+                                partial = false,
+                                isToday = day == date,
+                            )
+                        },
+                    )
+                } else {
+                    val done = counts.filterValues { it >= habit.dailyTarget }.keys
+                    HabitCardUi(
+                        habit = habit,
+                        periodCount = counts[date] ?: 0,
+                        streak = Streaks.currentStreak(done, date),
+                        week = lastSeven.map { day ->
+                            val count = counts[day] ?: 0
+                            DayCell(
+                                date = day,
+                                completed = day in done,
+                                partial = count in 1 until habit.dailyTarget,
+                                isToday = day == date,
+                            )
+                        },
+                    )
+                }
             }
             HomeUiState(
                 habits = cards,
-                doneToday = cards.count { it.completedToday },
+                doneToday = cards.count { it.completedNow },
                 today = date,
                 loaded = true,
             )
@@ -134,20 +155,39 @@ class HomeViewModel(
     private val _userMessage = MutableStateFlow<Int?>(null)
     val userMessage: StateFlow<Int?> = _userMessage.asStateFlow()
 
-    fun addHabit(name: String, emoji: String, color: Long, dailyTarget: Int) {
+    fun addHabit(name: String, emoji: String, color: Long, dailyTarget: Int, goalPeriod: String) {
         val trimmed = name.trim()
         if (trimmed.isEmpty()) return
         viewModelScope.launch {
-            repository.addHabit(trimmed, emoji, color, dailyTarget)
+            repository.addHabit(trimmed, emoji, color, dailyTarget, goalPeriod)
             refreshWidget()
         }
     }
 
-    fun updateHabit(habitId: Long, name: String, emoji: String, color: Long, dailyTarget: Int) {
+    fun updateHabit(
+        habitId: Long,
+        name: String,
+        emoji: String,
+        color: Long,
+        dailyTarget: Int,
+        goalPeriod: String,
+    ) {
         val trimmed = name.trim()
         if (trimmed.isEmpty()) return
         viewModelScope.launch {
-            repository.updateHabit(habitId, trimmed, emoji, color, dailyTarget)
+            repository.updateHabit(habitId, trimmed, emoji, color, dailyTarget, goalPeriod)
+            refreshWidget()
+        }
+    }
+
+    /** Moves a habit one position up or down in the list. */
+    fun moveHabit(card: HabitCardUi, up: Boolean) {
+        val list = uiState.value.habits
+        val index = list.indexOfFirst { it.habit.id == card.habit.id }
+        if (index == -1) return
+        val neighbor = list.getOrNull(index + if (up) -1 else 1) ?: return
+        viewModelScope.launch {
+            repository.swapSortOrders(card.habit, neighbor.habit)
             refreshWidget()
         }
     }
@@ -165,7 +205,7 @@ class HomeViewModel(
      */
     fun tap(card: HabitCardUi) {
         viewModelScope.launch {
-            if (card.completedToday) {
+            if (card.completedNow) {
                 repository.decrement(card.habit.id, uiState.value.today)
             } else {
                 repository.increment(card.habit.id, uiState.value.today)

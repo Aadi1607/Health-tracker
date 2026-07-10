@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 
 @Database(
     entities = [Habit::class, Completion::class],
-    version = 2,
+    version = 3,
     exportSchema = false,
 )
 abstract class HabitDatabase : RoomDatabase() {
@@ -24,9 +24,17 @@ abstract class HabitDatabase : RoomDatabase() {
             }
         }
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE habits ADD COLUMN goalPeriod TEXT NOT NULL DEFAULT 'daily'")
+                db.execSQL("ALTER TABLE habits ADD COLUMN sortOrder INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("UPDATE habits SET sortOrder = createdAt")
+            }
+        }
+
         fun build(context: Context): HabitDatabase =
             Room.databaseBuilder(context, HabitDatabase::class.java, "habits.db")
-                .addMigrations(MIGRATION_1_2)
+                .addMigrations(MIGRATION_1_2, MIGRATION_2_3)
                 .build()
     }
 }

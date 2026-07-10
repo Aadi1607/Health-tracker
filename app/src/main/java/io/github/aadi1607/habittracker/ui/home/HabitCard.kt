@@ -103,21 +103,28 @@ fun HabitCard(
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
                         )
-                        val streakText = if (card.streak > 0) {
-                            pluralStringResource(R.plurals.streak_days, card.streak, card.streak)
-                        } else {
-                            stringResource(R.string.no_streak_yet)
+                        val streakText = when {
+                            card.streak <= 0 -> stringResource(R.string.no_streak_yet)
+                            card.habit.isWeekly ->
+                                pluralStringResource(R.plurals.streak_weeks, card.streak, card.streak)
+                            else ->
+                                pluralStringResource(R.plurals.streak_days, card.streak, card.streak)
                         }
                         Text(
-                            text = if (card.habit.dailyTarget > 1) {
-                                stringResource(
-                                    R.string.card_subtitle_with_count,
-                                    card.todayCount.coerceAtMost(card.habit.dailyTarget),
+                            text = when {
+                                card.habit.isWeekly -> stringResource(
+                                    R.string.card_subtitle_with_count_week,
+                                    card.periodCount.coerceAtMost(card.habit.dailyTarget),
                                     card.habit.dailyTarget,
                                     streakText,
                                 )
-                            } else {
-                                streakText
+                                card.habit.dailyTarget > 1 -> stringResource(
+                                    R.string.card_subtitle_with_count,
+                                    card.periodCount.coerceAtMost(card.habit.dailyTarget),
+                                    card.habit.dailyTarget,
+                                    streakText,
+                                )
+                                else -> streakText
                             },
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -128,12 +135,12 @@ fun HabitCard(
                 DayChain(
                     week = card.week,
                     color = habitColor,
-                    todayCompleted = card.completedToday,
+                    todayCompleted = card.completedNow,
                 )
             }
             Spacer(modifier = Modifier.size(12.dp))
             CheckButton(
-                count = card.todayCount,
+                count = card.periodCount,
                 target = card.habit.dailyTarget,
                 color = habitColor,
                 habitName = card.habit.name,

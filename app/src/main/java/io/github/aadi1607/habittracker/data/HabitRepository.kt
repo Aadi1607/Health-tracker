@@ -3,6 +3,7 @@ package io.github.aadi1607.habittracker.data
 import io.github.aadi1607.habittracker.data.db.Completion
 import io.github.aadi1607.habittracker.data.db.Habit
 import io.github.aadi1607.habittracker.data.db.HabitDao
+import io.github.aadi1607.habittracker.domain.Streaks
 import java.time.LocalDate
 import kotlinx.coroutines.flow.Flow
 
@@ -14,20 +15,32 @@ class HabitRepository(private val dao: HabitDao) {
 
     fun observeCompletions(): Flow<List<Completion>> = dao.observeCompletions()
 
-    suspend fun addHabit(name: String, emoji: String, color: Long, dailyTarget: Int) {
+    suspend fun addHabit(name: String, emoji: String, color: Long, dailyTarget: Int, goalPeriod: String) {
+        val now = System.currentTimeMillis()
         dao.insertHabit(
             Habit(
                 name = name,
                 emoji = emoji,
                 color = color,
-                createdAt = System.currentTimeMillis(),
+                createdAt = now,
                 dailyTarget = dailyTarget.coerceAtLeast(1),
+                goalPeriod = goalPeriod,
+                sortOrder = now,
             )
         )
     }
 
-    suspend fun updateHabit(habitId: Long, name: String, emoji: String, color: Long, dailyTarget: Int) =
-        dao.updateHabit(habitId, name.trim(), emoji, color, dailyTarget.coerceAtLeast(1))
+    suspend fun updateHabit(
+        habitId: Long,
+        name: String,
+        emoji: String,
+        color: Long,
+        dailyTarget: Int,
+        goalPeriod: String,
+    ) = dao.updateHabit(habitId, name.trim(), emoji, color, dailyTarget.coerceAtLeast(1), goalPeriod)
+
+    suspend fun swapSortOrders(first: Habit, second: Habit) =
+        dao.swapSortOrders(first.id, first.sortOrder, second.id, second.sortOrder)
 
     suspend fun deleteHabit(habitId: Long) = dao.deleteHabit(habitId)
 
@@ -41,18 +54,25 @@ class HabitRepository(private val dao: HabitDao) {
 
     suspend fun getCompletions(): List<Completion> = dao.getCompletions()
 
-    /** Today's log count per habit id, for the widget. */
-    suspend fun getCountsOn(date: LocalDate): Map<Long, Int> =
-        dao.getCompletionsOn(date.toString()).associate { it.habitId to it.count }
-
-    /** Habits that have not reached their daily target on [date], with progress. */
-    suspend fun getPendingOn(date: LocalDate): List<PendingHabit> {
-        val countByHabit = dao.getCompletionsOn(date.toString()).associate { it.habitId to it.count }
-        return dao.getHabits().mapNotNull { habit ->
-            val count = countByHabit[habit.id] ?: 0
-            if (count < habit.dailyTarget) PendingHabit(habit, count) else null
+    /**
+     * Each habit's progress toward its target for the period containing [date]:
+     * today's logs for daily habits, this ISO week's logs for weekly ones.
+     */
+    suspend fun getProgressOn(date: LocalDate): List<PendingHabit> {
+        val weekStart = Streaks.weekStart(date)
+        val weekCompletions = dao.getCompletionsBetween(weekStart.toString(), date.toString())
+        return dao.getHabits().map { habit ->
+            val count = weekCompletions
+                .filter { it.habitId == habit.id }
+                .filter { habit.isWeekly || it.date == date.toString() }
+                .sumOf { it.count }
+            PendingHabit(habit, count)
         }
     }
+
+    /** Habits that have not reached their target in the current period. */
+    suspend fun getPendingOn(date: LocalDate): List<PendingHabit> =
+        getProgressOn(date).filter { it.count < it.habit.dailyTarget }
 
     suspend fun replaceAll(habits: List<Habit>, completions: List<Completion>) =
         dao.replaceAll(habits, completions)

@@ -50,31 +50,43 @@ class StatsViewModel(
         ) { habits, completions, selectedMonth ->
             val today = LocalDate.now()
             val zone = ZoneId.systemDefault()
-            val targets = habits.associate { it.id to it.dailyTarget }
-            // Per habit: the dates on which the daily target was reached.
-            val doneByHabit: Map<Long, Set<LocalDate>> = completions
+            val countsByHabit: Map<Long, Map<LocalDate, Int>> = completions
                 .groupBy { it.habitId }
-                .mapValues { (habitId, list) ->
-                    val target = targets[habitId] ?: 1
-                    list.filter { it.count >= target }
-                        .map { LocalDate.parse(it.date) }
-                        .toSet()
-                }
+                .mapValues { (_, list) -> list.associate { LocalDate.parse(it.date) to it.count } }
 
             val stats = habits.map { habit ->
-                val done = doneByHabit[habit.id].orEmpty()
+                val counts = countsByHabit[habit.id].orEmpty()
                 val createdOn = Instant.ofEpochMilli(habit.createdAt).atZone(zone).toLocalDate()
-                HabitStats(
-                    habit = habit,
-                    currentStreak = Streaks.currentStreak(done, today),
-                    bestStreak = Streaks.bestStreak(done),
-                    completionRate = Streaks.completionRate(done, createdOn, today),
-                )
+                if (habit.isWeekly) {
+                    HabitStats(
+                        habit = habit,
+                        currentStreak = Streaks.currentWeeklyStreak(counts, habit.dailyTarget, today),
+                        bestStreak = Streaks.bestWeeklyStreak(counts, habit.dailyTarget),
+                        completionRate = Streaks.weeklyCompletionRate(
+                            counts, habit.dailyTarget, createdOn, today,
+                        ),
+                    )
+                } else {
+                    val done = counts.filterValues { it >= habit.dailyTarget }.keys
+                    HabitStats(
+                        habit = habit,
+                        currentStreak = Streaks.currentStreak(done, today),
+                        bestStreak = Streaks.bestStreak(done),
+                        completionRate = Streaks.completionRate(done, createdOn, today),
+                    )
+                }
             }
 
+            // Heatmap: a habit counts for a day when it hit its daily target,
+            // or — for weekly goals — when it was logged at all that day.
             val habitCount = habits.size
-            val completedPerDay = doneByHabit.values
-                .flatten()
+            val completedPerDay = habits
+                .flatMap { habit ->
+                    val counts = countsByHabit[habit.id].orEmpty()
+                    counts.filterValues { count ->
+                        if (habit.isWeekly) count > 0 else count >= habit.dailyTarget
+                    }.keys
+                }
                 .groupingBy { it }
                 .eachCount()
             val heatmap = buildMap {

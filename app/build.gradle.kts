@@ -14,12 +14,28 @@ android {
         applicationId = "io.github.aadi1607.habittracker"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "1.2"
+        versionCode = 4
+        versionName = "1.3"
+    }
+
+    signingConfigs {
+        // Checked-in key so sideloaded builds keep a stable signature and
+        // updates install over each other. Not a secret-grade key — replace
+        // with a private keystore before any store distribution.
+        create("shared") {
+            storeFile = file("signing/shared.keystore")
+            storePassword = "healthtrack"
+            keyAlias = "healthtrack"
+            keyPassword = "healthtrack"
+        }
     }
 
     buildTypes {
+        debug {
+            signingConfig = signingConfigs.getByName("shared")
+        }
         release {
+            signingConfig = signingConfigs.getByName("shared")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

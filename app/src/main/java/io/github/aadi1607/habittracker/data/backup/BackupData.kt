@@ -17,6 +17,8 @@ data class BackupHabit(
     val color: Long,
     val createdAt: Long,
     val dailyTarget: Int = 1,
+    val goalPeriod: String = "daily",
+    val sortOrder: Long = 0,
 )
 
 @Serializable

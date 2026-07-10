@@ -43,6 +43,67 @@ object Streaks {
     fun lastDays(today: LocalDate, n: Int): List<LocalDate> =
         List(n) { today.minusDays((n - 1 - it).toLong()) }
 
+    /** Monday of the ISO week containing [date]. */
+    fun weekStart(date: LocalDate): LocalDate =
+        date.minusDays((date.dayOfWeek.value - 1).toLong())
+
+    /** Total logs per ISO week (keyed by that week's Monday). */
+    fun weeklySums(countsByDate: Map<LocalDate, Int>): Map<LocalDate, Int> =
+        countsByDate.entries
+            .groupBy { weekStart(it.key) }
+            .mapValues { (_, entries) -> entries.sumOf { it.value } }
+
+    /**
+     * Consecutive weeks (ending at the current one) whose total logs reached
+     * [weeklyTarget]. Like the daily streak, a still-in-progress current week
+     * doesn't break the run — it just doesn't count until the target is met.
+     */
+    fun currentWeeklyStreak(
+        countsByDate: Map<LocalDate, Int>,
+        weeklyTarget: Int,
+        today: LocalDate,
+    ): Int {
+        val sums = weeklySums(countsByDate)
+        var week = weekStart(today)
+        var streak = 0
+        if ((sums[week] ?: 0) >= weeklyTarget) streak++
+        week = week.minusWeeks(1)
+        while ((sums[week] ?: 0) >= weeklyTarget) {
+            streak++
+            week = week.minusWeeks(1)
+        }
+        return streak
+    }
+
+    /** Longest run of consecutive weeks whose total logs reached [weeklyTarget]. */
+    fun bestWeeklyStreak(countsByDate: Map<LocalDate, Int>, weeklyTarget: Int): Int {
+        val met = weeklySums(countsByDate).filterValues { it >= weeklyTarget }.keys
+        if (met.isEmpty()) return 0
+        val sorted = met.toSortedSet().toList()
+        var best = 1
+        var run = 1
+        for (i in 1 until sorted.size) {
+            run = if (sorted[i] == sorted[i - 1].plusWeeks(1)) run + 1 else 1
+            if (run > best) best = run
+        }
+        return best
+    }
+
+    /** Fraction of whole weeks since [createdOn] whose total logs met [weeklyTarget]. */
+    fun weeklyCompletionRate(
+        countsByDate: Map<LocalDate, Int>,
+        weeklyTarget: Int,
+        createdOn: LocalDate,
+        today: LocalDate,
+    ): Float {
+        val start = weekStart(if (createdOn.isAfter(today)) today else createdOn)
+        val weeks = (ChronoUnit.WEEKS.between(start, weekStart(today)) + 1).coerceAtLeast(1)
+        val met = weeklySums(countsByDate).count { (week, sum) ->
+            !week.isBefore(start) && sum >= weeklyTarget
+        }
+        return (met.toFloat() / weeks).coerceIn(0f, 1f)
+    }
+
     /**
      * Completion rate as a fraction in 0..1: completed days divided by days the
      * habit has existed (from [createdOn] through [today], inclusive).

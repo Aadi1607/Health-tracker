@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -24,8 +25,11 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +50,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -69,6 +74,8 @@ fun SettingsSheet(
     onReminderTimeChange: (hour: Int, minute: Int) -> Unit,
     onNudgesEnabledChange: (Boolean) -> Unit,
     onNudgeIntervalChange: (Int) -> Unit,
+    onTestNotification: () -> Unit,
+    onChangePassword: (current: String, new: String) -> Unit,
     onExport: () -> Unit,
     onImport: () -> Unit,
     onLogout: () -> Unit,
@@ -76,6 +83,7 @@ fun SettingsSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val context = LocalContext.current
     var showTimePicker by rememberSaveable { mutableStateOf(false) }
+    var showPasswordDialog by rememberSaveable { mutableStateOf(false) }
 
     // Runs the action that asked for POST_NOTIFICATIONS once the system dialog
     // closes. The toggles stay enabled even on denial; workers check
@@ -193,6 +201,64 @@ fun SettingsSheet(
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                     )
+                }
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onTestNotification)
+                    .padding(vertical = 12.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                )
+                Spacer(modifier = Modifier.weight(0.05f))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = stringResource(R.string.test_notification),
+                        style = MaterialTheme.typography.titleMedium,
+                    )
+                    Text(
+                        text = stringResource(R.string.test_notification_summary),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                }
+            }
+
+            val powerManager = remember { context.getSystemService(PowerManager::class.java) }
+            val ignoringBattery = remember {
+                powerManager.isIgnoringBatteryOptimizations(context.packageName)
+            }
+            if (!ignoringBattery) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = stringResource(R.string.battery_optimization_summary),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.weight(1f),
+                    )
+                    TextButton(
+                        onClick = {
+                            context.startActivity(
+                                Intent(
+                                    Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
+                                    Uri.parse("package:${context.packageName}"),
+                                )
+                            )
+                        },
+                    ) {
+                        Text(stringResource(R.string.allow))
+                    }
                 }
             }
 
@@ -318,6 +384,21 @@ fun SettingsSheet(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .clickable { showPasswordDialog = true }
+                    .padding(vertical = 14.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(imageVector = Icons.Default.Lock, contentDescription = null)
+                Spacer(modifier = Modifier.weight(0.05f))
+                Text(
+                    text = stringResource(R.string.change_password),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
                     .clickable(onClick = onLogout)
                     .padding(vertical = 14.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -335,6 +416,73 @@ fun SettingsSheet(
                 )
             }
         }
+    }
+
+    if (showPasswordDialog) {
+        var current by rememberSaveable { mutableStateOf("") }
+        var new by rememberSaveable { mutableStateOf("") }
+        var confirm by rememberSaveable { mutableStateOf("") }
+        val mismatch = confirm.isNotEmpty() && new != confirm
+        val tooShort = new.isNotEmpty() && new.length < 4
+        AlertDialog(
+            onDismissRequest = { showPasswordDialog = false },
+            title = { Text(stringResource(R.string.change_password)) },
+            text = {
+                Column {
+                    OutlinedTextField(
+                        value = current,
+                        onValueChange = { current = it },
+                        label = { Text(stringResource(R.string.current_password)) },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = new,
+                        onValueChange = { new = it },
+                        label = { Text(stringResource(R.string.new_password)) },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        isError = tooShort,
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    OutlinedTextField(
+                        value = confirm,
+                        onValueChange = { confirm = it },
+                        label = { Text(stringResource(R.string.confirm_password)) },
+                        singleLine = true,
+                        visualTransformation = PasswordVisualTransformation(),
+                        isError = mismatch,
+                    )
+                    if (mismatch || tooShort) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            text = stringResource(
+                                if (mismatch) R.string.password_mismatch else R.string.password_too_short
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.error,
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    enabled = current.isNotEmpty() && new.length >= 4 && new == confirm,
+                    onClick = {
+                        onChangePassword(current, new)
+                        showPasswordDialog = false
+                    },
+                ) {
+                    Text(stringResource(R.string.ok))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showPasswordDialog = false }) {
+                    Text(stringResource(R.string.cancel))
+                }
+            },
+        )
     }
 
     if (showTimePicker && reminder != null) {

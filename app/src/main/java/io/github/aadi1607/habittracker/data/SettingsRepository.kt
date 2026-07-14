@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -32,6 +33,8 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         val NUDGES_ENABLED = booleanPreferencesKey("nudges_enabled")
         val NUDGE_INTERVAL_HOURS = intPreferencesKey("nudge_interval_hours")
         val LOGGED_IN = booleanPreferencesKey("logged_in")
+        val PASSWORD = stringPreferencesKey("password")
+        val ONBOARDED = booleanPreferencesKey("onboarded")
     }
 
     val loggedIn: Flow<Boolean> =
@@ -39,6 +42,21 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
 
     suspend fun setLoggedIn(loggedIn: Boolean) {
         dataStore.edit { it[Keys.LOGGED_IN] = loggedIn }
+    }
+
+    val password: Flow<String> =
+        dataStore.data.map { it[Keys.PASSWORD] ?: DEFAULT_PASSWORD }
+
+    suspend fun setPassword(password: String) {
+        dataStore.edit { it[Keys.PASSWORD] = password }
+    }
+
+    /** False until the first-run notification setup has been offered. */
+    val onboarded: Flow<Boolean> =
+        dataStore.data.map { it[Keys.ONBOARDED] ?: false }
+
+    suspend fun setOnboarded(onboarded: Boolean) {
+        dataStore.edit { it[Keys.ONBOARDED] = onboarded }
     }
 
     val dynamicColor: Flow<Boolean> =
@@ -82,5 +100,7 @@ class SettingsRepository(private val dataStore: DataStore<Preferences>) {
         const val DEFAULT_HOUR = 20
         const val DEFAULT_MINUTE = 0
         const val DEFAULT_NUDGE_INTERVAL_HOURS = 2
+        const val USERNAME = "aadi"
+        const val DEFAULT_PASSWORD = "aadi123"
     }
 }

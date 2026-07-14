@@ -10,6 +10,9 @@
     <string name="update_habit">Save changes</string>
     <string name="move_up">Move up</string>
     <string name="move_down">Move down</string>
+    <string name="archive">Archive</string>
+    <string name="unarchive">Unarchive</string>
+    <string name="archived_section">Archived</string>
     <string name="habit_name_label">Name</string>
     <string name="habit_name_hint">Drink water</string>
     <string name="pick_emoji">Pick an icon</string>
@@ -51,8 +54,27 @@
     <string name="empty_title">Grow your first habit</string>
     <string name="empty_message">Small steps, done daily, become big changes. Add a habit and start your first streak.</string>
     <string name="empty_cta">Add your first habit</string>
+    <string name="suggest_title">Or start with a popular habit:</string>
+    <string name="suggest_water">Drink water</string>
+    <string name="suggest_walk">Walk</string>
+    <string name="suggest_read">Read</string>
+    <string name="suggest_meditate">Meditate</string>
+    <string name="suggest_gym">Gym</string>
+    <string name="suggest_sleep">Sleep early</string>
 
     <string name="login_tagline">Track today, live better</string>
+    <string name="biometric_title">Unlock HealthTrack</string>
+    <string name="biometric_subtitle">Use your fingerprint or face to continue</string>
+    <string name="biometric_use_password">Use password</string>
+    <string name="biometric_button">Unlock with fingerprint</string>
+    <string name="change_password">Change password</string>
+    <string name="current_password">Current password</string>
+    <string name="new_password">New password</string>
+    <string name="confirm_password">Confirm new password</string>
+    <string name="password_mismatch">Passwords don\'t match</string>
+    <string name="password_too_short">Use at least 4 characters</string>
+    <string name="password_wrong">Current password is incorrect</string>
+    <string name="password_changed">Password changed</string>
     <string name="username_label">Username</string>
     <string name="password_label">Password</string>
     <string name="login_button">Log in</string>
@@ -71,6 +93,13 @@
     <string name="every_n_hours">Every %1$d h</string>
     <string name="exact_alarms_summary">Allow exact alarms so reminders arrive right on time</string>
     <string name="allow">Allow</string>
+    <string name="test_notification">Send test notification</string>
+    <string name="test_notification_summary">Check that notifications reach this phone</string>
+    <string name="test_notification_title">Test notification</string>
+    <string name="test_notification_text">Notifications are working — you\'re all set 🎉</string>
+    <string name="test_notification_sent">Test notification sent — check your notification shade</string>
+    <string name="notifications_blocked">Notifications are blocked. Allow them for HealthTrack in system settings.</string>
+    <string name="battery_optimization_summary">Battery optimization can delay or kill reminders. Exclude HealthTrack for reliable delivery.</string>
     <string name="export_data">Export JSON</string>
     <string name="import_data">Import JSON</string>
     <string name="export_success">Backup exported</string>
@@ -79,6 +108,9 @@
     <string name="import_failure">Import failed — not a valid backup file</string>
 
     <string name="stats_title">Statistics</string>
+    <string name="share_stats">Share stats</string>
+    <string name="share_header">My HealthTrack stats 💪</string>
+    <string name="share_line" translatable="false">%1$s %2$s — 🔥%3$d · best %4$d · %5$d%%</string>
     <string name="current_streak">Current streak</string>
     <string name="best_streak">Best streak</string>
     <string name="completion_rate">Completion</string>

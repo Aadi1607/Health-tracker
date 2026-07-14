@@ -42,6 +42,9 @@ class HabitRepository(private val dao: HabitDao) {
     suspend fun swapSortOrders(first: Habit, second: Habit) =
         dao.swapSortOrders(first.id, first.sortOrder, second.id, second.sortOrder)
 
+    suspend fun setArchived(habitId: Long, archived: Boolean) =
+        dao.setArchived(habitId, archived)
+
     suspend fun deleteHabit(habitId: Long) = dao.deleteHabit(habitId)
 
     /** Logs one more completion of the habit for [date]. */
@@ -61,13 +64,15 @@ class HabitRepository(private val dao: HabitDao) {
     suspend fun getProgressOn(date: LocalDate): List<PendingHabit> {
         val weekStart = Streaks.weekStart(date)
         val weekCompletions = dao.getCompletionsBetween(weekStart.toString(), date.toString())
-        return dao.getHabits().map { habit ->
-            val count = weekCompletions
-                .filter { it.habitId == habit.id }
-                .filter { habit.isWeekly || it.date == date.toString() }
-                .sumOf { it.count }
-            PendingHabit(habit, count)
-        }
+        return dao.getHabits()
+            .filterNot { it.archived }
+            .map { habit ->
+                val count = weekCompletions
+                    .filter { it.habitId == habit.id }
+                    .filter { habit.isWeekly || it.date == date.toString() }
+                    .sumOf { it.count }
+                PendingHabit(habit, count)
+            }
     }
 
     /** Habits that have not reached their target in the current period. */

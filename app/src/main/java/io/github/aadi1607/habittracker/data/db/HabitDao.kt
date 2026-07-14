@@ -52,6 +52,9 @@ interface HabitDao {
     @Query("UPDATE habits SET sortOrder = :sortOrder WHERE id = :habitId")
     suspend fun updateSortOrder(habitId: Long, sortOrder: Long)
 
+    @Query("UPDATE habits SET archived = :archived WHERE id = :habitId")
+    suspend fun setArchived(habitId: Long, archived: Boolean)
+
     /** Swaps the display positions of two habits. */
     @Transaction
     suspend fun swapSortOrders(firstId: Long, firstOrder: Long, secondId: Long, secondOrder: Long) {

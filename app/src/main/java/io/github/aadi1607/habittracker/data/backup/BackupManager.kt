@@ -26,7 +26,7 @@ class BackupManager(
                 habits = repository.getHabits().map {
                     BackupHabit(
                         it.id, it.name, it.emoji, it.color, it.createdAt,
-                        it.dailyTarget, it.goalPeriod, it.sortOrder,
+                        it.dailyTarget, it.goalPeriod, it.sortOrder, it.archived,
                     )
                 },
                 completions = repository.getCompletions().map {
@@ -49,7 +49,7 @@ class BackupManager(
                 habits = data.habits.map {
                     Habit(
                         it.id, it.name, it.emoji, it.color, it.createdAt,
-                        it.dailyTarget, it.goalPeriod, it.sortOrder,
+                        it.dailyTarget, it.goalPeriod, it.sortOrder, it.archived,
                     )
                 },
                 completions = data.completions.map {

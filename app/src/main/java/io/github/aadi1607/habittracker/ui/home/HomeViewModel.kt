@@ -15,8 +15,10 @@ import io.github.aadi1607.habittracker.data.SettingsRepository
 import io.github.aadi1607.habittracker.data.backup.BackupManager
 import io.github.aadi1607.habittracker.data.db.Habit
 import io.github.aadi1607.habittracker.domain.Streaks
+import io.github.aadi1607.habittracker.reminder.NotificationHelper
 import io.github.aadi1607.habittracker.reminder.ReminderScheduler
 import io.github.aadi1607.habittracker.widget.HabitWidget
+import androidx.core.app.NotificationManagerCompat
 import androidx.glance.appwidget.updateAll
 import java.time.Duration
 import java.time.LocalDate
@@ -54,7 +56,10 @@ data class HabitCardUi(
 }
 
 data class HomeUiState(
+    /** Active habits, in display order. */
     val habits: List<HabitCardUi> = emptyList(),
+    /** Archived habits: history kept, hidden from the day's tracking. */
+    val archived: List<HabitCardUi> = emptyList(),
     val doneToday: Int = 0,
     val today: LocalDate = LocalDate.now(),
     val loaded: Boolean = false,
@@ -138,9 +143,11 @@ class HomeViewModel(
                     )
                 }
             }
+            val (archivedCards, activeCards) = cards.partition { it.habit.archived }
             HomeUiState(
-                habits = cards,
-                doneToday = cards.count { it.completedNow },
+                habits = activeCards,
+                archived = archivedCards,
+                doneToday = activeCards.count { it.completedNow },
                 today = date,
                 loaded = true,
             )
@@ -219,6 +226,52 @@ class HomeViewModel(
 
     fun logout() {
         viewModelScope.launch { settings.setLoggedIn(false) }
+    }
+
+    fun archiveHabit(habitId: Long, archived: Boolean) {
+        viewModelScope.launch {
+            repository.setArchived(habitId, archived)
+            refreshWidget()
+        }
+    }
+
+    /** False until the first-run notification setup has been offered. */
+    val onboarded = settings.onboarded
+
+    /**
+     * First-run setup: turn the daily reminder and nudges on by default so
+     * notifications work out of the box (the user can switch them off later).
+     */
+    fun completeFirstRunSetup() {
+        viewModelScope.launch {
+            if (settings.onboarded.first()) return@launch
+            settings.setOnboarded(true)
+            settings.setReminderEnabled(true)
+            settings.setNudgesEnabled(true)
+            val current = settings.reminder.first()
+            reminderScheduler.scheduleDaily(current.hour, current.minute)
+            reminderScheduler.scheduleNextNudge(current.nudgeIntervalHours)
+        }
+    }
+
+    fun sendTestNotification() {
+        if (NotificationManagerCompat.from(application).areNotificationsEnabled()) {
+            NotificationHelper.postTest(application)
+            showMessage(R.string.test_notification_sent)
+        } else {
+            showMessage(R.string.notifications_blocked)
+        }
+    }
+
+    fun changePassword(current: String, new: String) {
+        viewModelScope.launch {
+            if (current != settings.password.first()) {
+                showMessage(R.string.password_wrong)
+            } else {
+                settings.setPassword(new)
+                showMessage(R.string.password_changed)
+            }
+        }
     }
 
     fun setDynamicColor(enabled: Boolean) {

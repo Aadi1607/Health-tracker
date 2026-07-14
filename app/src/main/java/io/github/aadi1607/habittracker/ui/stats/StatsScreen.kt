@@ -16,10 +16,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import android.content.Intent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -58,6 +61,11 @@ fun StatsRoute(
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
+    val context = LocalContext.current
+    val shareHeader = stringResource(R.string.share_header)
+    val shareLine = stringResource(R.string.share_line)
+    val shareChooser = stringResource(R.string.share_stats)
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -68,6 +76,38 @@ fun StatsRoute(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = stringResource(R.string.back),
                         )
+                    }
+                },
+                actions = {
+                    if (state.habitStats.isNotEmpty()) {
+                        IconButton(
+                            onClick = {
+                                val text = buildString {
+                                    appendLine(shareHeader)
+                                    state.habitStats.forEach { s ->
+                                        appendLine(
+                                            shareLine.format(
+                                                s.habit.emoji,
+                                                s.habit.name,
+                                                s.currentStreak,
+                                                s.bestStreak,
+                                                (s.completionRate * 100).toInt(),
+                                            )
+                                        )
+                                    }
+                                }
+                                val intent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "text/plain"
+                                    putExtra(Intent.EXTRA_TEXT, text)
+                                }
+                                context.startActivity(Intent.createChooser(intent, shareChooser))
+                            },
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Share,
+                                contentDescription = stringResource(R.string.share_stats),
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

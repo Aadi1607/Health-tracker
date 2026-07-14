@@ -23,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -38,26 +39,33 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import io.github.aadi1607.habittracker.R
+import io.github.aadi1607.habittracker.data.SettingsRepository
 import androidx.compose.ui.unit.dp
 
-// Local app lock, not real authentication: the credentials live in the APK and
-// the data on disk is not encrypted.
-private const val USERNAME = "aadi"
-private const val PASSWORD = "aadi123"
-
+// Local app lock, not real authentication: the data on disk is not encrypted.
 @Composable
-fun LoginScreen(onSuccess: () -> Unit) {
+fun LoginScreen(
+    expectedPassword: String?,
+    biometricAvailable: Boolean,
+    onBiometric: () -> Unit,
+    onSuccess: () -> Unit,
+) {
     var username by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var showError by rememberSaveable { mutableStateOf(false) }
 
     fun submit() {
-        if (username.trim() == USERNAME && password == PASSWORD) {
+        if (username.trim() == SettingsRepository.USERNAME && password == expectedPassword) {
             showError = false
             onSuccess()
         } else {
             showError = true
         }
+    }
+
+    // Offer the fingerprint sheet right away when biometrics are enrolled.
+    LaunchedEffect(biometricAvailable) {
+        if (biometricAvailable) onBiometric()
     }
 
     // One-shot entrance: everything fades and floats up on first composition.
@@ -143,9 +151,15 @@ fun LoginScreen(onSuccess: () -> Unit) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
-            enabled = username.isNotBlank() && password.isNotBlank(),
+            enabled = username.isNotBlank() && password.isNotBlank() && expectedPassword != null,
         ) {
             Text(stringResource(R.string.login_button))
+        }
+        if (biometricAvailable) {
+            Spacer(modifier = Modifier.height(8.dp))
+            TextButton(onClick = onBiometric, modifier = Modifier.fillMaxWidth()) {
+                Text(stringResource(R.string.biometric_button))
+            }
         }
         }
         }

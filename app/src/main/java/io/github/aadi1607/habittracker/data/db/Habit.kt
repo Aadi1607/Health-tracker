@@ -23,6 +23,9 @@ data class Habit(
     /** Manual ordering on the home screen; lower comes first. */
     @ColumnInfo(defaultValue = "0")
     val sortOrder: Long = 0,
+    /** Archived habits keep their history but are hidden from the day's list. */
+    @ColumnInfo(defaultValue = "0")
+    val archived: Boolean = false,
 ) {
     val isWeekly: Boolean get() = goalPeriod == PERIOD_WEEKLY
 

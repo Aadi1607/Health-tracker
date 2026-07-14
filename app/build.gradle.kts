@@ -14,8 +14,8 @@ android {
         applicationId = "io.github.aadi1607.habittracker"
         minSdk = 26
         targetSdk = 36
-        versionCode = 5
-        versionName = "1.4"
+        versionCode = 6
+        versionName = "1.5"
     }
 
     signingConfigs {
@@ -77,6 +77,7 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.androidx.glance.appwidget)
+    implementation(libs.androidx.biometric)
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)

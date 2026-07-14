@@ -51,6 +51,22 @@ class ReminderScheduler(private val context: Context) {
         alarmManager.cancel(nudgePendingIntent())
     }
 
+    /**
+     * Arms the nudge alarm only if none appears to be pending, so opening the
+     * app doesn't keep pushing the next nudge further away.
+     */
+    fun ensureNudgeScheduled(intervalHours: Int) {
+        val existing = PendingIntent.getBroadcast(
+            context,
+            REQUEST_NUDGE,
+            Intent(context, ReminderReceiver::class.java).setAction(ReminderReceiver.ACTION_NUDGE),
+            PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE,
+        )
+        if (existing == null) {
+            scheduleNextNudge(intervalHours)
+        }
+    }
+
     private fun setAlarm(at: LocalDateTime, pendingIntent: PendingIntent) {
         val triggerAtMillis = at.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         try {

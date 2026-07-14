@@ -98,4 +98,26 @@ object NotificationHelper {
     fun cancel(context: Context, notificationId: Int) {
         NotificationManagerCompat.from(context).cancel(notificationId)
     }
+
+    /** Immediate notification so the user can verify delivery end to end. */
+    fun postTest(context: Context) {
+        val manager = NotificationManagerCompat.from(context)
+        if (!manager.areNotificationsEnabled()) return
+        val contentIntent = PendingIntent.getActivity(
+            context,
+            0,
+            Intent(context, MainActivity::class.java),
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        val notification = NotificationCompat.Builder(context, HabitApplication.REMINDER_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_notification)
+            .setContentTitle(context.getString(R.string.test_notification_title))
+            .setContentText(context.getString(R.string.test_notification_text))
+            .setContentIntent(contentIntent)
+            .setAutoCancel(true)
+            .build()
+        runCatching { manager.notify(TEST_NOTIFICATION_ID, notification) }
+    }
+
+    private const val TEST_NOTIFICATION_ID = 1003
 }

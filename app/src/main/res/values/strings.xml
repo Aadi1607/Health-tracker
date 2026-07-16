@@ -1,142 +1,142 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">HealthTrack</string>
-    <string name="home_title">Today</string>
-    <string name="progress_done">%1$d of %2$d done</string>
-    <string name="all_done_header">All done for today 🎉</string>
+    <string name="app_name">Tiffin Tracker</string>
 
-    <string name="add_habit_title">New habit</string>
-    <string name="edit_habit_title">Edit habit</string>
-    <string name="update_habit">Save changes</string>
-    <string name="move_up">Move up</string>
-    <string name="move_down">Move down</string>
-    <string name="archive">Archive</string>
-    <string name="unarchive">Unarchive</string>
-    <string name="archived_section">Archived</string>
-    <string name="habit_name_label">Name</string>
-    <string name="habit_name_hint">Drink water</string>
-    <string name="pick_emoji">Pick an icon</string>
-    <string name="goal_label">Goal</string>
-    <string name="per_day">Per day</string>
-    <string name="per_week">Per week</string>
-    <string name="times_per_day">Times per day</string>
-    <string name="times_per_day_hint">e.g. 8 for drinking water through the day</string>
-    <string name="times_per_week">Times per week</string>
-    <string name="times_per_week_hint">e.g. 3 for gym sessions spread over the week</string>
-    <string name="pick_color">Pick a color</string>
-    <string name="color_selected">Selected color</string>
-    <string name="save_habit">Save habit</string>
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_billing">Billing</string>
+    <string name="nav_stats">Stats</string>
+    <string name="nav_settings">Settings</string>
 
-    <string name="no_streak_yet">Start your streak today</string>
-    <string name="count_of_target" translatable="false">%1$d/%2$d</string>
-    <string name="card_subtitle_with_count">%1$d of %2$d today · %3$s</string>
-    <plurals name="streak_days">
-        <item quantity="one">%d day streak</item>
-        <item quantity="other">%d day streak</item>
-    </plurals>
-    <plurals name="streak_weeks">
-        <item quantity="one">%d week streak</item>
-        <item quantity="other">%d week streak</item>
-    </plurals>
-    <string name="card_subtitle_with_count_week">%1$d of %2$d this week · %3$s</string>
+    <!-- Home / day logging -->
+    <string name="home_today">Today</string>
+    <string name="home_pick_date">Pick a date</string>
+    <string name="home_previous_day">Previous day</string>
+    <string name="home_next_day">Next day</string>
+    <string name="home_jump_to_today">Jump to today</string>
+    <string name="meal_lunch">Lunch</string>
+    <string name="meal_dinner">Dinner</string>
+    <string name="meal_extra">Extra</string>
+    <string name="extra_tiffins">Extra tiffins</string>
+    <string name="decrease_extra">Decrease extra tiffins</string>
+    <string name="increase_extra">Increase extra tiffins</string>
+    <string name="mark_skipped">Mark skipped</string>
+    <string name="undo_skip">Undo skip</string>
+    <string name="day_skipped">Skipped</string>
+    <string name="day_pending">Not logged yet</string>
+    <string name="add_note">Add note</string>
+    <string name="edit_note">Edit note</string>
+    <string name="note_hint">e.g. extra roti, half tiffin</string>
+    <string name="note_label">Note</string>
+    <string name="tiffins_today_count">%1$d tiffin(s)</string>
 
-    <string name="mark_done">Mark %1$s as done</string>
-    <string name="mark_not_done">Mark %1$s as not done</string>
+    <!-- Calendar -->
+    <string name="calendar_previous_month">Previous month</string>
+    <string name="calendar_next_month">Next month</string>
+    <string name="legend_taken">Taken</string>
+    <string name="legend_skipped">Skipped</string>
+    <string name="legend_pending">Pending</string>
+    <string name="calendar_edit_day">Entries for %1$s</string>
 
-    <string name="delete">Delete</string>
-    <string name="cancel">Cancel</string>
-    <string name="ok">OK</string>
-    <string name="back">Back</string>
-    <string name="delete_habit_title">Delete habit?</string>
-    <string name="delete_habit_message">“%1$s” and its whole history will be removed. This cannot be undone.</string>
+    <!-- Billing -->
+    <string name="billing_title">Billing</string>
+    <string name="billing_cycle_label">Cycle: %1$s – %2$s</string>
+    <string name="billing_previous_cycle">Previous cycle</string>
+    <string name="billing_next_cycle">Next cycle</string>
+    <string name="billing_tiffins">Tiffins</string>
+    <string name="billing_bill">Bill</string>
+    <string name="billing_paid">Paid</string>
+    <string name="billing_balance">Balance</string>
+    <string name="billing_carry_forward">Carry-forward</string>
+    <string name="billing_total_due">Total due</string>
+    <string name="billing_status_paid">Paid</string>
+    <string name="billing_status_partial">Partially paid</string>
+    <string name="billing_status_pending">Pending</string>
+    <string name="billing_record_payment">Record payment</string>
+    <string name="billing_payment_amount">Amount</string>
+    <string name="billing_payment_date">Payment date</string>
+    <string name="billing_payments_heading">Payments this cycle</string>
+    <string name="billing_no_payments">No payments recorded yet</string>
+    <string name="billing_delete_payment">Delete payment</string>
+    <string name="billing_pay_full">Fill full balance</string>
 
-    <string name="empty_emoji" translatable="false">🌱</string>
-    <string name="empty_title">Grow your first habit</string>
-    <string name="empty_message">Small steps, done daily, become big changes. Add a habit and start your first streak.</string>
-    <string name="empty_cta">Add your first habit</string>
-    <string name="suggest_title">Or start with a popular habit:</string>
-    <string name="suggest_water">Drink water</string>
-    <string name="suggest_walk">Walk</string>
-    <string name="suggest_read">Read</string>
-    <string name="suggest_meditate">Meditate</string>
-    <string name="suggest_gym">Gym</string>
-    <string name="suggest_sleep">Sleep early</string>
+    <!-- Stats -->
+    <string name="stats_title">Dashboard</string>
+    <string name="stats_tiffins_this_cycle">Tiffins this cycle</string>
+    <string name="stats_amount_due">Amount due</string>
+    <string name="stats_amount_paid">Amount paid</string>
+    <string name="stats_days_skipped">Days skipped</string>
+    <string name="stats_last_six_months">Tiffins per month (last 6 months)</string>
+    <string name="stats_streak">Current streak</string>
+    <string name="stats_streak_days">%1$d day(s)</string>
 
-    <string name="login_tagline">Track today, live better</string>
-    <string name="biometric_title">Unlock HealthTrack</string>
-    <string name="biometric_subtitle">Use your fingerprint or face to continue</string>
-    <string name="biometric_use_password">Use password</string>
-    <string name="biometric_button">Unlock with fingerprint</string>
-    <string name="change_password">Change password</string>
-    <string name="current_password">Current password</string>
-    <string name="new_password">New password</string>
-    <string name="confirm_password">Confirm new password</string>
-    <string name="password_mismatch">Passwords don\'t match</string>
-    <string name="password_too_short">Use at least 4 characters</string>
-    <string name="password_wrong">Current password is incorrect</string>
-    <string name="password_changed">Password changed</string>
-    <string name="username_label">Username</string>
-    <string name="password_label">Password</string>
-    <string name="login_button">Log in</string>
-    <string name="login_error">Invalid username or password</string>
-    <string name="logout">Log out</string>
-
+    <!-- Settings -->
     <string name="settings_title">Settings</string>
-    <string name="dynamic_color">Material You colors</string>
-    <string name="dynamic_color_summary">Use colors from your wallpaper</string>
-    <string name="dynamic_color_unavailable">Available on Android 12 and newer</string>
-    <string name="daily_reminder">Daily reminder</string>
-    <string name="daily_reminder_summary">A nudge if habits are still pending</string>
-    <string name="reminder_time">Reminder time</string>
-    <string name="nudges">Frequent nudges</string>
-    <string name="nudges_summary">Repeat reminders during the day (8:00–22:00) while habits like drinking water are pending</string>
-    <string name="every_n_hours">Every %1$d h</string>
-    <string name="exact_alarms_summary">Allow exact alarms so reminders arrive right on time</string>
-    <string name="allow">Allow</string>
-    <string name="test_notification">Send test notification</string>
-    <string name="test_notification_summary">Check that notifications reach this phone</string>
-    <string name="test_notification_title">Test notification</string>
-    <string name="test_notification_text">Notifications are working — you\'re all set 🎉</string>
-    <string name="test_notification_sent">Test notification sent — check your notification shade</string>
-    <string name="notifications_blocked">Notifications are blocked. Allow them for HealthTrack in system settings.</string>
-    <string name="battery_optimization_summary">Battery optimization can delay or kill reminders. Exclude HealthTrack for reliable delivery.</string>
-    <string name="export_data">Export JSON</string>
-    <string name="import_data">Import JSON</string>
-    <string name="export_success">Backup exported</string>
-    <string name="export_failure">Export failed</string>
-    <string name="import_success">Backup imported</string>
-    <string name="import_failure">Import failed — not a valid backup file</string>
+    <string name="settings_users_heading">Users</string>
+    <string name="settings_add_user">Add user</string>
+    <string name="settings_edit_user">Edit user</string>
+    <string name="settings_user_name">Name</string>
+    <string name="settings_user_price">Price per tiffin</string>
+    <string name="settings_user_color">Color tag</string>
+    <string name="settings_delete_user">Delete user</string>
+    <string name="settings_delete_user_message">Delete %1$s? All their entries and payments will be removed. This cannot be undone.</string>
+    <string name="settings_max_users">You can track up to 5 users.</string>
+    <string name="settings_billing_heading">Billing</string>
+    <string name="settings_cycle_start_day">Billing cycle start day</string>
+    <string name="settings_cycle_start_day_value">Day %1$d of each month</string>
+    <string name="settings_currency">Currency symbol</string>
+    <string name="settings_notifications_heading">Notifications</string>
+    <string name="settings_daily_reminder">Daily log reminder</string>
+    <string name="settings_reminder_time">Reminder time</string>
+    <string name="settings_payment_reminder_days">Payment reminder (days after cycle ends)</string>
+    <string name="settings_appearance_heading">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">System default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_export_heading">Export &amp; backup</string>
+    <string name="settings_export_csv">Export CSV (this cycle)</string>
+    <string name="settings_export_pdf">Export PDF invoice (this cycle)</string>
+    <string name="settings_backup">Backup data (JSON)</string>
+    <string name="settings_restore">Restore from backup</string>
+    <string name="settings_restore_message">Restoring replaces all current data with the backup. Continue?</string>
+    <string name="settings_danger_heading">Danger zone</string>
+    <string name="settings_reset_month">Reset current cycle</string>
+    <string name="settings_reset_month_message">Delete all tiffin entries in the current billing cycle? Payments are kept. This cannot be undone.</string>
+    <string name="settings_clear_all">Clear all data</string>
+    <string name="settings_clear_all_message">Delete all users, entries and payments? This cannot be undone.</string>
+    <string name="settings_backup_done">Backup saved</string>
+    <string name="settings_restore_done">Backup restored</string>
+    <string name="settings_restore_failed">Could not read that backup file</string>
 
-    <string name="stats_title">Statistics</string>
-    <string name="share_stats">Share stats</string>
-    <string name="share_header">My HealthTrack stats 💪</string>
-    <string name="share_line" translatable="false">%1$s %2$s — 🔥%3$d · best %4$d · %5$d%%</string>
-    <string name="current_streak">Current streak</string>
-    <string name="best_streak">Best streak</string>
-    <string name="completion_rate">Completion</string>
-    <string name="completion_rate_value">%1$d%%</string>
-    <string name="previous_month">Previous month</string>
-    <string name="next_month">Next month</string>
-    <string name="month_year" translatable="false">%1$s %2$d</string>
-    <plurals name="total_completions">
-        <item quantity="one">%d completion recorded all time</item>
-        <item quantity="other">%d completions recorded all time</item>
-    </plurals>
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="confirm">Confirm</string>
+    <string name="ok">OK</string>
+    <string name="share">Share</string>
+    <string name="close">Close</string>
 
-    <string name="notification_channel_name">Daily reminders</string>
-    <string name="notification_channel_description">Reminds you about habits that are still pending today</string>
-    <string name="nudge_channel_name">Frequent nudges</string>
-    <string name="nudge_channel_description">Repeat reminders during the day for habits that are done several times, like drinking water</string>
-    <string name="reminder_notification_title">Keep your streak alive</string>
-    <string name="nudge_notification_title">Habit check-in 💧</string>
-    <string name="habit_progress_line" translatable="false">%1$s %2$s (%3$d/%4$d)</string>
-    <string name="log_one">+1 %1$s %2$s</string>
-    <string name="widget_title">Today</string>
-    <string name="widget_empty">No habits yet — open HealthTrack to add one</string>
-    <string name="widget_all_done">All done 🎉</string>
-    <string name="widget_description">Today\'s habits with progress; tap a habit to log it</string>
-    <plurals name="reminder_notification_text">
-        <item quantity="one">%d habit is still waiting for you today</item>
-        <item quantity="other">%d habits are still waiting for you today</item>
-    </plurals>
+    <!-- Notifications -->
+    <string name="channel_reminders_name">Daily reminders</string>
+    <string name="channel_reminders_description">Reminds you to log today\'s tiffin</string>
+    <string name="channel_billing_name">Billing</string>
+    <string name="channel_billing_description">Cycle summaries and payment reminders</string>
+    <string name="notif_daily_title">Did you log today\'s tiffin?</string>
+    <string name="notif_daily_body">Not logged yet: %1$s</string>
+    <string name="notif_action_mark_taken">Mark taken</string>
+    <string name="notif_action_mark_skipped">Mark skipped</string>
+    <string name="notif_summary_title">Billing cycle ends today</string>
+    <string name="notif_summary_line">%1$s: %2$d tiffins · %3$s</string>
+    <string name="notif_payment_title">Payment pending</string>
+    <string name="notif_payment_body">%1$s still owes %2$s for the last cycle</string>
+
+    <!-- Export -->
+    <string name="export_csv_header">User,Date,Meal,Status,Quantity,Note</string>
+    <string name="export_share_csv">Share CSV report</string>
+    <string name="export_share_pdf">Share PDF invoice</string>
+    <string name="pdf_invoice_title">Tiffin Invoice</string>
+    <string name="pdf_generated_on">Generated on %1$s</string>
 </resources>

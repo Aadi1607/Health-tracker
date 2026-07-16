@@ -7,15 +7,15 @@ plugins {
 }
 
 android {
-    namespace = "io.github.aadi1607.habittracker"
+    namespace = "io.github.aadi1607.tiffintracker"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "io.github.aadi1607.habittracker"
+        applicationId = "io.github.aadi1607.tiffintracker"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.5"
+        versionCode = 1
+        versionName = "1.0"
     }
 
     signingConfigs {
@@ -69,6 +69,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -76,8 +77,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.datastore.preferences)
-    implementation(libs.androidx.glance.appwidget)
-    implementation(libs.androidx.biometric)
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.kotlinx.serialization.json)
 
     testImplementation(libs.junit)

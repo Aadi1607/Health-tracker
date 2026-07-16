@@ -1,72 +1,99 @@
-# HealthTrack
+# Tiffin Tracker
 
-A native Android habit tracker built with Kotlin and Jetpack Compose (Material 3). *Track today, live better.*
+A fully-offline Android app for two (or up to five) friends who share the same
+tiffin (meal delivery) service: log lunches and dinners with one tap, see the
+month at a glance, and let the app do the billing math.
+
+Built with **Kotlin + Jetpack Compose (Material 3)**, **MVVM**, **Room**,
+**DataStore**, and **WorkManager**. Min SDK 26 (Android 8.0), target SDK 36.
 
 ## Features
 
-- **Add habits** with a name, an emoji icon, one of six preset colors, and a goal: N times **per day** (8 glasses of water) or **per week** (3 gym sessions)
-- **Progress-ring check button**: each tap logs one; the ring fills and snaps into a solid check at the target, with a scale-bounce animation and haptic feedback
-- **Streaks** in the habit's own unit — consecutive days or consecutive weeks; a pending today/this-week doesn't break the streak until the period ends
-- **7-day chain** on each card: dots for the last 7 days, consecutive completed days joined by a colored line, today's dot outlined and pulsing while pending, partial days dimmed
-- **Daily progress** header with partial credit, and a confetti burst when everything is done
-- **Exact-time reminders** via AlarmManager: a daily summary at a chosen time plus optional nudges every 1–4 hours (8:00–22:00) while habits are pending; alarms survive reboots and app updates
-- **Actionable notifications**: "+1" buttons log a habit straight from the notification
-- **Home-screen widget** (Glance): today's habits with live progress, tap a row to log
-- **Long-press** a card to edit, reorder, or delete a habit
-- **Stats screen**: current/best streak and completion rate per habit, plus a monthly calendar heatmap
-- **Export / import** all data as JSON (Storage Access Framework)
-- **Dark ink-blue theme** by default (`#14161F` background, `#1C1F2B` cards) with an optional Material You dynamic color mode
-- Edge-to-edge layout, friendly empty state, state survives rotation and process death
+- **User profiles** — up to 5 users, each with an editable name, color tag,
+  and their own per-tiffin price (prices are stored in paise so money math is
+  exact).
+- **Quick daily logging** — lunch/dinner toggle chips with haptic feedback, an
+  extra-tiffin stepper, one-tap *Mark skipped*, an optional note per day, and
+  arrows/date-picker to backfill any past date.
+- **Calendar view** — monthly grid with one status dot per user per day
+  (green = taken, grey = skipped, orange = not logged); tap a day to edit its
+  entries in a bottom sheet.
+- **Billing** — configurable cycle start day (e.g. 5th → 4th), automatic
+  bill = tiffins × price, payment records with derived Paid / Partially paid /
+  Pending status, and carry-forward of unpaid balances from earlier cycles.
+- **Dashboard** — summary cards (tiffins, due, paid, skipped), a grouped bar
+  chart of the last 6 months per user, and per-user streak counters.
+- **Notifications** — daily "Did you log today's tiffin?" reminder (default
+  21:30, only if someone is unlogged) with *Mark taken* / *Mark skipped*
+  quick actions, a cycle-end summary, and a payment reminder N days after an
+  unpaid cycle ends. Proper channels, DND-respecting, POST_NOTIFICATIONS
+  requested on Android 13+.
+- **Export & backup** — CSV report and a clean per-user PDF invoice for the
+  current cycle shared via the Android share sheet; full JSON backup/restore
+  through the Storage Access Framework (no storage permissions needed).
+- **Settings** — users, cycle start day, reminder time, currency symbol,
+  light/dark/system theme, reset-cycle and clear-all-data with confirmations.
 
-## Signing
+## Build & run
 
-Builds are signed with the checked-in `app/signing/shared.keystore` so sideloaded
-updates always install over the previous version. This key is intentionally not
-secret — generate and use a private keystore before distributing through a store.
+1. Install **Android Studio** (Ladybug or newer, with SDK 36).
+2. **File → Open** and select this repository's root folder.
+3. Let Gradle sync (wrapper: Gradle 8.x, AGP 8.10, Kotlin 2.0, JDK 17).
+4. Press **Run** on a device/emulator with Android 8.0+.
 
-## Tech stack
+Command line:
 
-| Layer | Choice |
-| --- | --- |
-| UI | Jetpack Compose, Material 3, single-activity |
-| Architecture | MVVM — `ViewModel` + `StateFlow`, unidirectional data flow |
-| Persistence | Room (`Habit`, `Completion` entities) behind a repository |
-| Preferences | DataStore |
-| Background | WorkManager (daily reminder) |
-| Serialization | kotlinx.serialization (JSON backup) |
-
-- Min SDK 26, target/compile SDK 36, single `:app` module.
-- Streak/date logic lives in `domain/Streaks.kt` as pure Kotlin with JUnit coverage.
-
-## Building
-
-```
-./gradlew assembleDebug
-```
-
-The debug APK lands in `app/build/outputs/apk/debug/`. Unit tests run with:
-
-```
-./gradlew testDebugUnitTest
+```sh
+./gradlew assembleDebug          # APK at app/build/outputs/apk/debug/
+./gradlew testDebugUnitTest      # billing/streak unit tests
 ```
 
-CI builds every push via GitHub Actions (`.github/workflows/android.yml`) and uploads the debug APK as a workflow artifact.
+Every push also builds a signed debug APK in GitHub Actions and attaches it to
+the `tiffin-latest` release.
 
-## Project layout
+## How notifications survive reboots
+
+Reminders are **self-re-arming one-time WorkManager jobs**, not exact alarms:
+
+1. `ReminderScheduler` enqueues a unique `OneTimeWorkRequest` whose initial
+   delay is the time until the next occurrence (e.g. tonight 21:30 for the
+   daily reminder, 20:00 for the billing check).
+2. When a worker runs, it does its check (post the reminder only if someone
+   is unlogged; post the cycle summary only on the cycle's last day; nag
+   about unpaid bills N days after a cycle ends) and then **re-enqueues
+   itself for the next day** — in a `finally` block, so the chain never dies.
+3. WorkManager persists its queue in its own database, so pending work
+   survives a reboot on its own. On top of that, a `BootReceiver` registered
+   for `BOOT_COMPLETED`, `MY_PACKAGE_REPLACED`, `TIMEZONE_CHANGED` and
+   `TIME_SET` re-arms both chains with **freshly computed delays** — this
+   matters because a one-time request's delay is relative, and a reboot,
+   update, or clock/timezone change can make the old delay fire at the wrong
+   wall-clock time.
+4. App startup also calls the scheduler with `ExistingWorkPolicy.KEEP` as a
+   belt-and-braces fallback (KEEP so an already-pending reminder isn't
+   reset), while the boot receiver and settings changes use `REPLACE`.
+
+This approach was chosen over `AlarmManager.setExact` because exact alarms
+need the `SCHEDULE_EXACT_ALARM` special permission on Android 12+ and can be
+revoked; WorkManager trades a few minutes of precision for guaranteed,
+permission-free delivery.
+
+## Project structure
 
 ```
-app/src/main/java/io/github/aadi1607/habittracker/
-├── HabitApplication.kt      # manual DI container, notification channel
-├── MainActivity.kt          # edge-to-edge, theme, home/stats navigation
+app/src/main/java/io/github/aadi1607/tiffintracker/
+├── TiffinApplication.kt      # DI container, channel + worker bootstrap
+├── MainActivity.kt           # bottom-nav scaffold, permission prompt
 ├── data/
-│   ├── db/                  # Room: entities, DAO, database
-│   ├── backup/              # JSON export/import
-│   ├── HabitRepository.kt
-│   └── SettingsRepository.kt (DataStore)
-├── domain/Streaks.kt        # pure streak/date math (unit tested)
-├── reminder/                # WorkManager scheduler + worker
-└── ui/
-    ├── home/                # home screen, habit card, add sheet, settings sheet
-    ├── stats/               # stats screen with monthly heatmap
-    └── theme/               # ink-blue dark theme, palette, typography
+│   ├── db/                   # Room: User, TiffinEntry, Payment + DAOs
+│   ├── TiffinRepository.kt   # single source of truth, Flow-based
+│   ├── SettingsRepository.kt # DataStore preferences
+│   ├── backup/               # JSON backup/restore (SAF)
+│   └── export/               # CSV + PdfDocument invoice, share-sheet helper
+├── domain/                   # pure logic: BillingCycle, BillCalculator, Streaks
+├── notifications/            # channels, workers, scheduler, receivers
+└── ui/                       # Compose screens: home, calendar, billing, stats, settings
 ```
+
+The habit-tracker app this repository previously hosted lives on the
+`claude/android-habit-tracker-uqp5sc` branch.

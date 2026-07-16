@@ -103,7 +103,12 @@ class BillCalculatorTest {
     fun `status is partial when some paid`() {
         val entries = listOf(entry(LocalDate.of(2026, 7, 10)))
         val payments = listOf(
-            Payment(userId, julyCycle.startEpochDay, 3000, LocalDate.of(2026, 7, 11).toEpochDay())
+            Payment(
+                userId = userId,
+                cycleStartEpochDay = julyCycle.startEpochDay,
+                amountPaise = 3000,
+                epochDay = LocalDate.of(2026, 7, 11).toEpochDay(),
+            )
         )
         val bill = BillCalculator.userBill(userId, pricePaise, julyCycle, entries, payments)
         assertEquals(BillStatus.PARTIAL, bill.status)
@@ -114,7 +119,12 @@ class BillCalculatorTest {
     fun `status is paid when fully paid`() {
         val entries = listOf(entry(LocalDate.of(2026, 7, 10)))
         val payments = listOf(
-            Payment(userId, julyCycle.startEpochDay, 6000, LocalDate.of(2026, 7, 11).toEpochDay())
+            Payment(
+                userId = userId,
+                cycleStartEpochDay = julyCycle.startEpochDay,
+                amountPaise = 6000,
+                epochDay = LocalDate.of(2026, 7, 11).toEpochDay(),
+            )
         )
         val bill = BillCalculator.userBill(userId, pricePaise, julyCycle, entries, payments)
         assertEquals(BillStatus.PAID, bill.status)

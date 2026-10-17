@@ -31,3 +31,15 @@ jobs:
         with:
           name: TiffinTracker-debug
           path: app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Create Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="v1.0.0-debug-$(date +%Y%m%d%H%M%S)"
+          cp app/build/outputs/apk/debug/app-debug.apk TiffinTracker-debug.apk
+          gh release create "$TAG" TiffinTracker-debug.apk \
+            --repo "${{ github.repository }}" \
+            --title "Tiffin Tracker Debug APK" \
+            --notes "Debug build of Tiffin Tracker app" \
+            --prerelease

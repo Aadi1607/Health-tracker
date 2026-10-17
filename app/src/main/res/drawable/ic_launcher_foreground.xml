@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Adaptive icon safe zone: 66dp centered in 108dp -->
+    <!-- Tiffin box icon centered -->
+
+    <!-- Bottom container -->
+    <path
+        android:fillColor="#FF6B35"
+        android:pathData="M30,72 L78,72 Q82,72 82,68 L82,58 Q82,54 78,54 L30,54 Q26,54 26,58 L26,68 Q26,72 30,72 Z" />
+    <!-- Middle container -->
+    <path
+        android:fillColor="#FF8A5C"
+        android:pathData="M30,52 L78,52 Q82,52 82,48 L82,38 Q82,34 78,34 L30,34 Q26,34 26,38 L26,48 Q26,52 30,52 Z" />
+    <!-- Lid -->
+    <path
+        android:fillColor="#FFAB80"
+        android:pathData="M32,32 L76,32 Q80,32 80,29 L80,28 Q80,25 76,25 L32,25 Q28,25 28,28 L28,29 Q28,32 32,32 Z" />
+    <!-- Handle -->
+    <path
+        android:pathData="M46,24 Q46,18 54,18 Q62,18 62,24"
+        android:strokeWidth="3.5"
+        android:strokeColor="#FF6B35"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round" />
+    <!-- Decorative steam lines -->
+    <path
+        android:pathData="M42,82 Q42,78 44,76"
+        android:strokeWidth="2"
+        android:strokeColor="#FFCBA4"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M54,84 Q54,79 56,76"
+        android:strokeWidth="2"
+        android:strokeColor="#FFCBA4"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round" />
+    <path
+        android:pathData="M66,82 Q66,78 68,76"
+        android:strokeWidth="2"
+        android:strokeColor="#FFCBA4"
+        android:fillColor="#00000000"
+        android:strokeLineCap="round" />
+</vector>

@@ -9,3 +9,8 @@
 .cxx
 local.properties
 build/
+/app/schemas
+*.apk
+*.aab
+*.jks
+*.keystore

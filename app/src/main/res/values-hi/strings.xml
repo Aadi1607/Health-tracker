@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">टिफ़िन ट्रैकर</string>
+
+    <!-- Navigation -->
+    <string name="nav_today">आज</string>
+    <string name="nav_calendar">कैलेंडर</string>
+    <string name="nav_bills">बिल</string>
+    <string name="nav_stats">आँकड़े</string>
+    <string name="nav_settings">सेटिंग्स</string>
+
+    <!-- Meal types -->
+    <string name="meal_breakfast">नाश्ता</string>
+    <string name="meal_lunch">दोपहर का खाना</string>
+    <string name="meal_dinner">रात का खाना</string>
+
+    <!-- Meal status -->
+    <string name="status_received">मिला</string>
+    <string name="status_skipped">नहीं लिया</string>
+    <string name="status_not_ordered">ऑर्डर नहीं</string>
+
+    <!-- Payment modes -->
+    <string name="payment_cash">नकद</string>
+    <string name="payment_upi">UPI</string>
+    <string name="payment_other">अन्य</string>
+
+    <!-- Provider -->
+    <string name="provider_name">टिफ़िन सर्विस का नाम</string>
+    <string name="provider_phone">फ़ोन नंबर</string>
+    <string name="provider_price_breakfast">नाश्ते की कीमत (₹)</string>
+    <string name="provider_price_lunch">दोपहर के खाने की कीमत (₹)</string>
+    <string name="provider_price_dinner">रात के खाने की कीमत (₹)</string>
+    <string name="provider_billing_start">बिलिंग साइकिल शुरू दिन</string>
+    <string name="provider_offers_breakfast">नाश्ता उपलब्ध</string>
+    <string name="provider_offers_lunch">दोपहर का खाना उपलब्ध</string>
+    <string name="provider_offers_dinner">रात का खाना उपलब्ध</string>
+    <string name="provider_active">सक्रिय</string>
+    <string name="provider_inactive">निष्क्रिय</string>
+    <string name="add_provider">टिफ़िन सर्विस जोड़ें</string>
+    <string name="edit_provider">टिफ़िन सर्विस संपादित करें</string>
+    <string name="delete_provider">टिफ़िन सर्विस हटाएँ</string>
+    <string name="providers">टिफ़िन सर्विस</string>
+    <string name="manage_providers">टिफ़िन सर्विस प्रबंधित करें</string>
+
+    <!-- Buttons / Actions -->
+    <string name="save">सेव करें</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="delete">हटाएँ</string>
+    <string name="edit">संपादित करें</string>
+    <string name="close">बंद करें</string>
+    <string name="confirm">पुष्टि करें</string>
+    <string name="mark_holiday">छुट्टी लगाएँ</string>
+    <string name="mark_away">बाहर गए</string>
+    <string name="away_from">से</string>
+    <string name="away_to">तक</string>
+    <string name="mark_away_range">बाहर गए (%1$s से %2$s तक)</string>
+    <string name="call">कॉल करें</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="add_note">नोट जोड़ें</string>
+    <string name="quantity">मात्रा</string>
+    <string name="extra_quantity">अतिरिक्त मात्रा (जैसे 2 टिफ़िन)</string>
+    <string name="add_payment">भुगतान जोड़ें</string>
+    <string name="record_payment">भुगतान दर्ज करें</string>
+    <string name="amount">राशि (₹)</string>
+    <string name="payment_date">भुगतान की तारीख</string>
+    <string name="payment_mode">भुगतान का तरीका</string>
+    <string name="payment_note">नोट (वैकल्पिक)</string>
+
+    <!-- Bills -->
+    <string name="monthly_bill">मासिक बिल</string>
+    <string name="bill_summary">बिल सारांश</string>
+    <string name="total_meals">कुल खाने</string>
+    <string name="total_breakfast">नाश्ता: %1$d</string>
+    <string name="total_lunch">दोपहर का खाना: %1$d</string>
+    <string name="total_dinner">रात का खाना: %1$d</string>
+    <string name="skipped_meals">छोड़े गए खाने</string>
+    <string name="amount_due">बकाया राशि</string>
+    <string name="amount_paid">भुगतान किया</string>
+    <string name="balance_due">शेष बकाया</string>
+    <string name="advance_paid">अग्रिम भुगतान</string>
+    <string name="currency_amount">₹%1$.2f</string>
+    <string name="bill_for_month">%1$s का बिल</string>
+    <string name="export_bill">बिल निर्यात करें</string>
+    <string name="share_bill">बिल शेयर करें</string>
+    <string name="share_via_whatsapp">WhatsApp पर शेयर करें</string>
+    <string name="export_as_pdf">PDF के रूप में निर्यात करें</string>
+    <string name="export_as_text">टेक्स्ट के रूप में निर्यात करें</string>
+    <string name="payments_history">भुगतान इतिहास</string>
+    <string name="no_payments">कोई भुगतान दर्ज नहीं</string>
+    <string name="select_month">महीना चुनें</string>
+    <string name="select_provider">टिफ़िन सर्विस चुनें</string>
+    <string name="all_providers">सभी टिफ़िन सर्विस</string>
+    <string name="bill_details">%1$s × ₹%2$.2f = ₹%3$.2f</string>
+
+    <!-- Calendar -->
+    <string name="calendar_title">कैलेंडर</string>
+    <string name="today">आज</string>
+    <string name="edit_day">दिन संपादित करें</string>
+    <string name="no_entries">इस दिन कोई एंट्री नहीं</string>
+
+    <!-- Stats -->
+    <string name="stats_title">आँकड़े</string>
+    <string name="meals_per_month">प्रति माह खाने</string>
+    <string name="spending_trend">खर्च का रुझान</string>
+    <string name="skip_rate">छोड़ने की दर</string>
+    <string name="last_6_months">पिछले 6 महीने</string>
+    <string name="total_spent">कुल खर्च: ₹%1$.2f</string>
+    <string name="avg_monthly">मासिक औसत: ₹%1$.2f</string>
+    <string name="skip_rate_percent">छोड़ने की दर: %1$.1f%%</string>
+
+    <!-- Settings -->
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="reminder">दैनिक रिमाइंडर</string>
+    <string name="reminder_enabled">रिमाइंडर चालू</string>
+    <string name="reminder_disabled">रिमाइंडर बंद</string>
+    <string name="reminder_time">रिमाइंडर का समय</string>
+    <string name="reminder_time_format">%1$02d:%2$02d</string>
+    <string name="theme">थीम</string>
+    <string name="theme_system">सिस्टम डिफ़ॉल्ट</string>
+    <string name="theme_light">लाइट</string>
+    <string name="theme_dark">डार्क</string>
+    <string name="currency">मुद्रा</string>
+    <string name="backup_data">डेटा बैकअप</string>
+    <string name="restore_data">डेटा रिस्टोर</string>
+    <string name="clear_data">सारा डेटा मिटाएँ</string>
+    <string name="backup_success">बैकअप सफलतापूर्वक सेव हुआ</string>
+    <string name="backup_failed">बैकअप विफल</string>
+    <string name="restore_success">डेटा सफलतापूर्वक रिस्टोर हुआ</string>
+    <string name="restore_failed">रिस्टोर विफल</string>
+    <string name="about">ऐप के बारे में</string>
+    <string name="version">वर्शन %1$s</string>
+
+    <!-- Empty states -->
+    <string name="empty_providers">कोई टिफ़िन सर्विस नहीं</string>
+    <string name="empty_providers_desc">शुरू करने के लिए अपनी पहली टिफ़िन सर्विस जोड़ें</string>
+    <string name="empty_meals">आज कोई खाना लॉग नहीं</string>
+    <string name="empty_meals_desc">आपकी खाने की एंट्री यहाँ दिखेंगी</string>
+    <string name="empty_payments">अभी तक कोई भुगतान दर्ज नहीं</string>
+    <string name="empty_stats">आँकड़ों के लिए पर्याप्त डेटा नहीं</string>
+    <string name="empty_stats_desc">अपने आँकड़े देखने के लिए कुछ दिन खाना लॉग करें</string>
+
+    <!-- Onboarding -->
+    <string name="welcome_title">टिफ़िन ट्रैकर में स्वागत है!</string>
+    <string name="welcome_desc">अपनी रोज़ाना टिफ़िन डिलीवरी ट्रैक करें और बिल आसानी से मैनेज करें।</string>
+    <string name="onboarding_add_provider">शुरू करने के लिए अपनी पहली टिफ़िन सर्विस जोड़ें</string>
+    <string name="get_started">शुरू करें</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">टिफ़िन रिमाइंडर</string>
+    <string name="notification_channel_desc">टिफ़िन लॉग करने के लिए दैनिक रिमाइंडर</string>
+    <string name="notification_title">टिफ़िन ट्रैकर</string>
+    <string name="notification_text">क्या आज का टिफ़िन आया?</string>
+    <string name="notification_action_received">मिला</string>
+    <string name="notification_action_skipped">नहीं लिया</string>
+    <string name="notification_action_open">ऐप खोलें</string>
+
+    <!-- Confirmation dialogs -->
+    <string name="confirm_delete_provider">क्या आप इस टिफ़िन सर्विस को हटाना चाहते हैं? सभी संबंधित खाने की एंट्री और भुगतान भी हट जाएँगे।</string>
+    <string name="confirm_clear_data">क्या आप सारा डेटा मिटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।</string>
+    <string name="confirm_restore">डेटा रिस्टोर करने से मौजूदा सारा डेटा बदल जाएगा। जारी रखें?</string>
+    <string name="confirm_mark_holiday">आज सभी टिफ़िन सर्विस के लिए छुट्टी लगाएँ? सभी खाने स्किप हो जाएँगे।</string>
+    <string name="confirm_mark_away">%1$s से %2$s तक बाहर गए? इस अवधि के सभी खाने स्किप हो जाएँगे।</string>
+
+    <!-- Misc -->
+    <string name="no_provider_selected">कोई टिफ़िन सर्विस नहीं चुनी</string>
+    <string name="search">खोजें</string>
+    <string name="filter">फ़िल्टर</string>
+    <string name="note_hint">जैसे अतिरिक्त रोटी, देर से आया</string>
+    <string name="price_per_meal">₹%1$.0f/खाना</string>
+    <string name="meals_count">%1$d खाने</string>
+    <string name="received_count">%1$d मिले</string>
+    <string name="skipped_count">%1$d स्किप</string>
+</resources>

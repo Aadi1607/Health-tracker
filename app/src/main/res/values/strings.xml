@@ -1,142 +1,173 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">HealthTrack</string>
-    <string name="home_title">Today</string>
-    <string name="progress_done">%1$d of %2$d done</string>
-    <string name="all_done_header">All done for today 🎉</string>
+    <string name="app_name">Tiffin Tracker</string>
 
-    <string name="add_habit_title">New habit</string>
-    <string name="edit_habit_title">Edit habit</string>
-    <string name="update_habit">Save changes</string>
-    <string name="move_up">Move up</string>
-    <string name="move_down">Move down</string>
-    <string name="archive">Archive</string>
-    <string name="unarchive">Unarchive</string>
-    <string name="archived_section">Archived</string>
-    <string name="habit_name_label">Name</string>
-    <string name="habit_name_hint">Drink water</string>
-    <string name="pick_emoji">Pick an icon</string>
-    <string name="goal_label">Goal</string>
-    <string name="per_day">Per day</string>
-    <string name="per_week">Per week</string>
-    <string name="times_per_day">Times per day</string>
-    <string name="times_per_day_hint">e.g. 8 for drinking water through the day</string>
-    <string name="times_per_week">Times per week</string>
-    <string name="times_per_week_hint">e.g. 3 for gym sessions spread over the week</string>
-    <string name="pick_color">Pick a color</string>
-    <string name="color_selected">Selected color</string>
-    <string name="save_habit">Save habit</string>
+    <!-- Navigation -->
+    <string name="nav_today">Today</string>
+    <string name="nav_calendar">Calendar</string>
+    <string name="nav_bills">Bills</string>
+    <string name="nav_stats">Stats</string>
+    <string name="nav_settings">Settings</string>
 
-    <string name="no_streak_yet">Start your streak today</string>
-    <string name="count_of_target" translatable="false">%1$d/%2$d</string>
-    <string name="card_subtitle_with_count">%1$d of %2$d today · %3$s</string>
-    <plurals name="streak_days">
-        <item quantity="one">%d day streak</item>
-        <item quantity="other">%d day streak</item>
-    </plurals>
-    <plurals name="streak_weeks">
-        <item quantity="one">%d week streak</item>
-        <item quantity="other">%d week streak</item>
-    </plurals>
-    <string name="card_subtitle_with_count_week">%1$d of %2$d this week · %3$s</string>
+    <!-- Meal types -->
+    <string name="meal_breakfast">Breakfast</string>
+    <string name="meal_lunch">Lunch</string>
+    <string name="meal_dinner">Dinner</string>
 
-    <string name="mark_done">Mark %1$s as done</string>
-    <string name="mark_not_done">Mark %1$s as not done</string>
+    <!-- Meal status -->
+    <string name="status_received">Received</string>
+    <string name="status_skipped">Skipped</string>
+    <string name="status_not_ordered">Not Ordered</string>
 
-    <string name="delete">Delete</string>
+    <!-- Payment modes -->
+    <string name="payment_cash">Cash</string>
+    <string name="payment_upi">UPI</string>
+    <string name="payment_other">Other</string>
+
+    <!-- Provider -->
+    <string name="provider_name">Provider Name</string>
+    <string name="provider_phone">Phone Number</string>
+    <string name="provider_price_breakfast">Breakfast Price (₹)</string>
+    <string name="provider_price_lunch">Lunch Price (₹)</string>
+    <string name="provider_price_dinner">Dinner Price (₹)</string>
+    <string name="provider_billing_start">Billing Cycle Start Day</string>
+    <string name="provider_offers_breakfast">Offers Breakfast</string>
+    <string name="provider_offers_lunch">Offers Lunch</string>
+    <string name="provider_offers_dinner">Offers Dinner</string>
+    <string name="provider_active">Active</string>
+    <string name="provider_inactive">Inactive</string>
+    <string name="add_provider">Add Provider</string>
+    <string name="edit_provider">Edit Provider</string>
+    <string name="delete_provider">Delete Provider</string>
+    <string name="providers">Providers</string>
+    <string name="manage_providers">Manage Providers</string>
+
+    <!-- Buttons / Actions -->
+    <string name="save">Save</string>
     <string name="cancel">Cancel</string>
-    <string name="ok">OK</string>
-    <string name="back">Back</string>
-    <string name="delete_habit_title">Delete habit?</string>
-    <string name="delete_habit_message">“%1$s” and its whole history will be removed. This cannot be undone.</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="close">Close</string>
+    <string name="confirm">Confirm</string>
+    <string name="mark_holiday">Mark Holiday</string>
+    <string name="mark_away">Mark Away</string>
+    <string name="away_from">From</string>
+    <string name="away_to">To</string>
+    <string name="mark_away_range">Mark Away (%1$s to %2$s)</string>
+    <string name="call">Call</string>
+    <string name="whatsapp">WhatsApp</string>
+    <string name="add_note">Add note</string>
+    <string name="quantity">Quantity</string>
+    <string name="extra_quantity">Extra quantity (e.g. 2 tiffins)</string>
+    <string name="add_payment">Add Payment</string>
+    <string name="record_payment">Record Payment</string>
+    <string name="amount">Amount (₹)</string>
+    <string name="payment_date">Payment Date</string>
+    <string name="payment_mode">Payment Mode</string>
+    <string name="payment_note">Note (optional)</string>
 
-    <string name="empty_emoji" translatable="false">🌱</string>
-    <string name="empty_title">Grow your first habit</string>
-    <string name="empty_message">Small steps, done daily, become big changes. Add a habit and start your first streak.</string>
-    <string name="empty_cta">Add your first habit</string>
-    <string name="suggest_title">Or start with a popular habit:</string>
-    <string name="suggest_water">Drink water</string>
-    <string name="suggest_walk">Walk</string>
-    <string name="suggest_read">Read</string>
-    <string name="suggest_meditate">Meditate</string>
-    <string name="suggest_gym">Gym</string>
-    <string name="suggest_sleep">Sleep early</string>
+    <!-- Bills -->
+    <string name="monthly_bill">Monthly Bill</string>
+    <string name="bill_summary">Bill Summary</string>
+    <string name="total_meals">Total Meals</string>
+    <string name="total_breakfast">Breakfast: %1$d</string>
+    <string name="total_lunch">Lunch: %1$d</string>
+    <string name="total_dinner">Dinner: %1$d</string>
+    <string name="skipped_meals">Skipped Meals</string>
+    <string name="amount_due">Amount Due</string>
+    <string name="amount_paid">Amount Paid</string>
+    <string name="balance_due">Balance Due</string>
+    <string name="advance_paid">Advance Paid</string>
+    <string name="currency_amount">₹%1$.2f</string>
+    <string name="bill_for_month">Bill for %1$s</string>
+    <string name="export_bill">Export Bill</string>
+    <string name="share_bill">Share Bill</string>
+    <string name="share_via_whatsapp">Share via WhatsApp</string>
+    <string name="export_as_pdf">Export as PDF</string>
+    <string name="export_as_text">Export as Text</string>
+    <string name="payments_history">Payment History</string>
+    <string name="no_payments">No payments recorded</string>
+    <string name="select_month">Select Month</string>
+    <string name="select_provider">Select Provider</string>
+    <string name="all_providers">All Providers</string>
+    <string name="bill_details">%1$s × ₹%2$.2f = ₹%3$.2f</string>
 
-    <string name="login_tagline">Track today, live better</string>
-    <string name="biometric_title">Unlock HealthTrack</string>
-    <string name="biometric_subtitle">Use your fingerprint or face to continue</string>
-    <string name="biometric_use_password">Use password</string>
-    <string name="biometric_button">Unlock with fingerprint</string>
-    <string name="change_password">Change password</string>
-    <string name="current_password">Current password</string>
-    <string name="new_password">New password</string>
-    <string name="confirm_password">Confirm new password</string>
-    <string name="password_mismatch">Passwords don\'t match</string>
-    <string name="password_too_short">Use at least 4 characters</string>
-    <string name="password_wrong">Current password is incorrect</string>
-    <string name="password_changed">Password changed</string>
-    <string name="username_label">Username</string>
-    <string name="password_label">Password</string>
-    <string name="login_button">Log in</string>
-    <string name="login_error">Invalid username or password</string>
-    <string name="logout">Log out</string>
+    <!-- Calendar -->
+    <string name="calendar_title">Calendar</string>
+    <string name="today">Today</string>
+    <string name="edit_day">Edit Day</string>
+    <string name="no_entries">No entries for this day</string>
 
-    <string name="settings_title">Settings</string>
-    <string name="dynamic_color">Material You colors</string>
-    <string name="dynamic_color_summary">Use colors from your wallpaper</string>
-    <string name="dynamic_color_unavailable">Available on Android 12 and newer</string>
-    <string name="daily_reminder">Daily reminder</string>
-    <string name="daily_reminder_summary">A nudge if habits are still pending</string>
-    <string name="reminder_time">Reminder time</string>
-    <string name="nudges">Frequent nudges</string>
-    <string name="nudges_summary">Repeat reminders during the day (8:00–22:00) while habits like drinking water are pending</string>
-    <string name="every_n_hours">Every %1$d h</string>
-    <string name="exact_alarms_summary">Allow exact alarms so reminders arrive right on time</string>
-    <string name="allow">Allow</string>
-    <string name="test_notification">Send test notification</string>
-    <string name="test_notification_summary">Check that notifications reach this phone</string>
-    <string name="test_notification_title">Test notification</string>
-    <string name="test_notification_text">Notifications are working — you\'re all set 🎉</string>
-    <string name="test_notification_sent">Test notification sent — check your notification shade</string>
-    <string name="notifications_blocked">Notifications are blocked. Allow them for HealthTrack in system settings.</string>
-    <string name="battery_optimization_summary">Battery optimization can delay or kill reminders. Exclude HealthTrack for reliable delivery.</string>
-    <string name="export_data">Export JSON</string>
-    <string name="import_data">Import JSON</string>
-    <string name="export_success">Backup exported</string>
-    <string name="export_failure">Export failed</string>
-    <string name="import_success">Backup imported</string>
-    <string name="import_failure">Import failed — not a valid backup file</string>
-
+    <!-- Stats -->
     <string name="stats_title">Statistics</string>
-    <string name="share_stats">Share stats</string>
-    <string name="share_header">My HealthTrack stats 💪</string>
-    <string name="share_line" translatable="false">%1$s %2$s — 🔥%3$d · best %4$d · %5$d%%</string>
-    <string name="current_streak">Current streak</string>
-    <string name="best_streak">Best streak</string>
-    <string name="completion_rate">Completion</string>
-    <string name="completion_rate_value">%1$d%%</string>
-    <string name="previous_month">Previous month</string>
-    <string name="next_month">Next month</string>
-    <string name="month_year" translatable="false">%1$s %2$d</string>
-    <plurals name="total_completions">
-        <item quantity="one">%d completion recorded all time</item>
-        <item quantity="other">%d completions recorded all time</item>
-    </plurals>
+    <string name="meals_per_month">Meals Per Month</string>
+    <string name="spending_trend">Spending Trend</string>
+    <string name="skip_rate">Skip Rate</string>
+    <string name="last_6_months">Last 6 Months</string>
+    <string name="total_spent">Total Spent: ₹%1$.2f</string>
+    <string name="avg_monthly">Avg Monthly: ₹%1$.2f</string>
+    <string name="skip_rate_percent">Skip Rate: %1$.1f%%</string>
 
-    <string name="notification_channel_name">Daily reminders</string>
-    <string name="notification_channel_description">Reminds you about habits that are still pending today</string>
-    <string name="nudge_channel_name">Frequent nudges</string>
-    <string name="nudge_channel_description">Repeat reminders during the day for habits that are done several times, like drinking water</string>
-    <string name="reminder_notification_title">Keep your streak alive</string>
-    <string name="nudge_notification_title">Habit check-in 💧</string>
-    <string name="habit_progress_line" translatable="false">%1$s %2$s (%3$d/%4$d)</string>
-    <string name="log_one">+1 %1$s %2$s</string>
-    <string name="widget_title">Today</string>
-    <string name="widget_empty">No habits yet — open HealthTrack to add one</string>
-    <string name="widget_all_done">All done 🎉</string>
-    <string name="widget_description">Today\'s habits with progress; tap a habit to log it</string>
-    <plurals name="reminder_notification_text">
-        <item quantity="one">%d habit is still waiting for you today</item>
-        <item quantity="other">%d habits are still waiting for you today</item>
-    </plurals>
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="reminder">Daily Reminder</string>
+    <string name="reminder_enabled">Reminder enabled</string>
+    <string name="reminder_disabled">Reminder disabled</string>
+    <string name="reminder_time">Reminder Time</string>
+    <string name="reminder_time_format">%1$02d:%2$02d</string>
+    <string name="theme">Theme</string>
+    <string name="theme_system">System Default</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="currency">Currency</string>
+    <string name="backup_data">Backup Data</string>
+    <string name="restore_data">Restore Data</string>
+    <string name="clear_data">Clear All Data</string>
+    <string name="backup_success">Backup saved successfully</string>
+    <string name="backup_failed">Backup failed</string>
+    <string name="restore_success">Data restored successfully</string>
+    <string name="restore_failed">Restore failed</string>
+    <string name="about">About</string>
+    <string name="version">Version %1$s</string>
+
+    <!-- Empty states -->
+    <string name="empty_providers">No providers yet</string>
+    <string name="empty_providers_desc">Add your first tiffin provider to get started</string>
+    <string name="empty_meals">No meals logged today</string>
+    <string name="empty_meals_desc">Your meal entries will appear here</string>
+    <string name="empty_payments">No payments recorded yet</string>
+    <string name="empty_stats">Not enough data for stats</string>
+    <string name="empty_stats_desc">Log meals for a few days to see your statistics</string>
+
+    <!-- Onboarding -->
+    <string name="welcome_title">Welcome to Tiffin Tracker!</string>
+    <string name="welcome_desc">Track your daily tiffin deliveries and manage bills effortlessly.</string>
+    <string name="onboarding_add_provider">Add your first tiffin provider to get started</string>
+    <string name="get_started">Get Started</string>
+
+    <!-- Notifications -->
+    <string name="notification_channel_name">Tiffin Reminders</string>
+    <string name="notification_channel_desc">Daily reminders to log your tiffin</string>
+    <string name="notification_title">Tiffin Tracker</string>
+    <string name="notification_text">Did you receive today\'s tiffin?</string>
+    <string name="notification_action_received">Received</string>
+    <string name="notification_action_skipped">Skipped</string>
+    <string name="notification_action_open">Open App</string>
+
+    <!-- Confirmation dialogs -->
+    <string name="confirm_delete_provider">Are you sure you want to delete this provider? All associated meal entries and payments will also be deleted.</string>
+    <string name="confirm_clear_data">Are you sure you want to clear all data? This action cannot be undone.</string>
+    <string name="confirm_restore">Restoring data will replace all existing data. Continue?</string>
+    <string name="confirm_mark_holiday">Mark today as a holiday for all providers? All meals will be marked as skipped.</string>
+    <string name="confirm_mark_away">Mark %1$s to %2$s as away? All meals in this range will be marked as skipped.</string>
+
+    <!-- Misc -->
+    <string name="no_provider_selected">No provider selected</string>
+    <string name="search">Search</string>
+    <string name="filter">Filter</string>
+    <string name="note_hint">e.g. extra roti, came late</string>
+    <string name="price_per_meal">₹%1$.0f/meal</string>
+    <string name="meals_count">%1$d meals</string>
+    <string name="received_count">%1$d received</string>
+    <string name="skipped_count">%1$d skipped</string>
 </resources>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <include domain="database" path="tiffin_tracker.db" />
+    <include domain="sharedpref" path="tiffin_settings.preferences_pb" />
+    <exclude domain="database" path="tiffin_tracker.db-journal" />
+    <exclude domain="database" path="tiffin_tracker.db-wal" />
+    <exclude domain="database" path="tiffin_tracker.db-shm" />
+    <exclude domain="no_backup" path="." />
+    <exclude domain="cache" path="." />
+</full-backup-content>

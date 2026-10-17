@@ -1,72 +1,108 @@
-# HealthTrack
+# Tiffin Tracker
 
-A native Android habit tracker built with Kotlin and Jetpack Compose (Material 3). *Track today, live better.*
+A native Android app to track daily tiffin (meal box) deliveries from one or more tiffin services and calculate the monthly bill.
 
 ## Features
 
-- **Add habits** with a name, an emoji icon, one of six preset colors, and a goal: N times **per day** (8 glasses of water) or **per week** (3 gym sessions)
-- **Progress-ring check button**: each tap logs one; the ring fills and snaps into a solid check at the target, with a scale-bounce animation and haptic feedback
-- **Streaks** in the habit's own unit — consecutive days or consecutive weeks; a pending today/this-week doesn't break the streak until the period ends
-- **7-day chain** on each card: dots for the last 7 days, consecutive completed days joined by a colored line, today's dot outlined and pulsing while pending, partial days dimmed
-- **Daily progress** header with partial credit, and a confetti burst when everything is done
-- **Exact-time reminders** via AlarmManager: a daily summary at a chosen time plus optional nudges every 1–4 hours (8:00–22:00) while habits are pending; alarms survive reboots and app updates
-- **Actionable notifications**: "+1" buttons log a habit straight from the notification
-- **Home-screen widget** (Glance): today's habits with live progress, tap a row to log
-- **Long-press** a card to edit, reorder, or delete a habit
-- **Stats screen**: current/best streak and completion rate per habit, plus a monthly calendar heatmap
-- **Export / import** all data as JSON (Storage Access Framework)
-- **Dark ink-blue theme** by default (`#14161F` background, `#1C1F2B` cards) with an optional Material You dynamic color mode
-- Edge-to-edge layout, friendly empty state, state survives rotation and process death
+- **Daily Logging** — One-tap meal tracking (Received / Skipped / Not Ordered) for each provider and meal type
+- **Multiple Providers** — Manage several tiffin services with per-meal-type pricing (Breakfast, Lunch, Dinner)
+- **Calendar View** — Color-coded monthly calendar showing delivery status at a glance
+- **Billing & Payments** — Auto-calculated monthly bills, payment recording, balance tracking
+- **Reminders** — Configurable daily notification with quick-action buttons
+- **Statistics** — Charts for meals per month, spending trends, and skip rates
+- **Bulk Actions** — Mark holidays or away ranges to auto-skip meals
+- **Export/Share** — Share bills as text via WhatsApp or any sharing app
+- **Backup/Restore** — Export and import data as JSON
+- **Bilingual** — English and Hindi language support
 
-## Signing
+## Tech Stack
 
-Builds are signed with the checked-in `app/signing/shared.keystore` so sideloaded
-updates always install over the previous version. This key is intentionally not
-secret — generate and use a private keystore before distributing through a store.
-
-## Tech stack
-
-| Layer | Choice |
-| --- | --- |
-| UI | Jetpack Compose, Material 3, single-activity |
-| Architecture | MVVM — `ViewModel` + `StateFlow`, unidirectional data flow |
-| Persistence | Room (`Habit`, `Completion` entities) behind a repository |
+| Layer | Technology |
+|-------|-----------|
+| Language | Kotlin |
+| UI | Jetpack Compose + Material 3 (dynamic color, dark mode) |
+| Architecture | MVVM (ViewModel + StateFlow) |
+| DI | Hilt |
+| Database | Room (offline-first local storage) |
+| Background | WorkManager (daily reminders) |
 | Preferences | DataStore |
-| Background | WorkManager (daily reminder) |
-| Serialization | kotlinx.serialization (JSON backup) |
+| Min SDK | 26 (Android 8.0) |
+| Target SDK | 35 |
 
-- Min SDK 26, target/compile SDK 36, single `:app` module.
-- Streak/date logic lives in `domain/Streaks.kt` as pure Kotlin with JUnit coverage.
-
-## Building
+## Project Structure
 
 ```
-./gradlew assembleDebug
-```
-
-The debug APK lands in `app/build/outputs/apk/debug/`. Unit tests run with:
-
-```
-./gradlew testDebugUnitTest
-```
-
-CI builds every push via GitHub Actions (`.github/workflows/android.yml`) and uploads the debug APK as a workflow artifact.
-
-## Project layout
-
-```
-app/src/main/java/io/github/aadi1607/habittracker/
-├── HabitApplication.kt      # manual DI container, notification channel
-├── MainActivity.kt          # edge-to-edge, theme, home/stats navigation
+app/src/main/java/com/tiffintracker/
 ├── data/
-│   ├── db/                  # Room: entities, DAO, database
-│   ├── backup/              # JSON export/import
-│   ├── HabitRepository.kt
-│   └── SettingsRepository.kt (DataStore)
-├── domain/Streaks.kt        # pure streak/date math (unit tested)
-├── reminder/                # WorkManager scheduler + worker
-└── ui/
-    ├── home/                # home screen, habit card, add sheet, settings sheet
-    ├── stats/               # stats screen with monthly heatmap
-    └── theme/               # ink-blue dark theme, palette, typography
+│   ├── db/              # Room entities, DAOs, database
+│   └── repository/      # Repository layer, settings, backup
+├── di/                  # Hilt dependency injection modules
+├── reminder/            # WorkManager worker, scheduler, receivers
+├── ui/
+│   ├── bills/           # Bills & payments screen
+│   ├── calendar/        # Calendar view screen
+│   ├── components/      # Reusable UI components
+│   ├── navigation/      # Bottom nav & routing
+│   ├── onboarding/      # First-run onboarding
+│   ├── provider/        # Provider CRUD screens
+│   ├── settings/        # Settings screen
+│   ├── stats/           # Statistics & charts screen
+│   ├── theme/           # Material 3 theming
+│   └── today/           # Today (home) screen
+└── util/                # Date, currency, sharing utilities
 ```
+
+## Building & Running
+
+### Prerequisites
+
+- Android Studio Ladybug (2024.2) or later
+- JDK 17
+- Android SDK with API 35
+
+### Steps
+
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/aadi1607/health-tracker.git
+   cd health-tracker
+   ```
+
+2. Open the project in Android Studio.
+
+3. Sync Gradle — the version catalog (`gradle/libs.versions.toml`) manages all dependencies.
+
+4. Build and run on an emulator or device (min API 26):
+   ```bash
+   ./gradlew assembleDebug
+   ```
+
+5. Run unit tests:
+   ```bash
+   ./gradlew test
+   ```
+
+## Data Model
+
+### Provider
+Stores tiffin service details: name, phone, per-meal-type prices, offered meal types, and billing cycle start day.
+
+### MealEntry
+Tracks each meal delivery with provider, date, meal type (Breakfast/Lunch/Dinner), status (Received/Skipped/Not Ordered), quantity, and optional notes.
+
+### Payment
+Records payments made to providers with amount, date, and payment mode (Cash/UPI/Other).
+
+## Key Screens
+
+| Screen | Description |
+|--------|-------------|
+| **Today** | Quick-toggle cards for logging today's meals |
+| **Calendar** | Monthly view with color-coded day status |
+| **Bills** | Auto-calculated bills per provider with payment tracking |
+| **Stats** | Charts showing meal counts, spending, and skip rates |
+| **Settings** | Reminders, theme, backup/restore, language |
+
+## License
+
+This project is for personal use. All rights reserved.

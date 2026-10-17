@@ -245,7 +245,7 @@ fun AddEditProviderScreen(
 
     LaunchedEffect(providerId) {
         if (providerId != null) {
-            viewModel.loadProvider(providerId)
+            viewModel.getProvider(providerId)
         }
     }
 

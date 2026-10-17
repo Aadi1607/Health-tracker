@@ -148,7 +148,7 @@ private fun CalendarContent(
                     val provider = uiState.providers.find { it.id == providerId }
                     item(key = "provider_$providerId") {
                         DayDetailCard(
-                            providerName = provider?.name ?: stringResource(R.string.unknown_provider),
+                            providerName = provider?.name ?: "Unknown",
                             entries = entries,
                             onUpdateEntry = onUpdateEntry
                         )
@@ -158,7 +158,7 @@ private fun CalendarContent(
         } else {
             item {
                 Text(
-                    text = stringResource(R.string.select_day_hint),
+                    text = "Select a day to view details",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(vertical = 16.dp)
@@ -184,7 +184,7 @@ private fun MonthHeader(
         IconButton(onClick = onPrevious) {
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = stringResource(R.string.previous_month)
+                contentDescription = "Previous month"
             )
         }
 
@@ -210,7 +210,7 @@ private fun MonthHeader(
         IconButton(onClick = onNext) {
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = stringResource(R.string.next_month)
+                contentDescription = "Next month"
             )
         }
     }
@@ -416,9 +416,9 @@ private fun DayEntryRow(
     var editNote by remember(entry) { mutableStateOf(entry.note) }
 
     val mealLabel = when (entry.mealType) {
-        MealType.BREAKFAST.name -> stringResource(R.string.breakfast)
-        MealType.LUNCH.name -> stringResource(R.string.lunch)
-        MealType.DINNER.name -> stringResource(R.string.dinner)
+        MealType.BREAKFAST.name -> stringResource(R.string.meal_breakfast)
+        MealType.LUNCH.name -> stringResource(R.string.meal_lunch)
+        MealType.DINNER.name -> stringResource(R.string.meal_dinner)
         else -> entry.mealType
     }
 
@@ -454,9 +454,9 @@ private fun DayEntryRow(
                         label = {
                             Text(
                                 text = when (status) {
-                                    MealStatus.RECEIVED -> stringResource(R.string.received)
-                                    MealStatus.SKIPPED -> stringResource(R.string.skipped)
-                                    MealStatus.NOT_ORDERED -> stringResource(R.string.not_ordered)
+                                    MealStatus.RECEIVED -> stringResource(R.string.status_received)
+                                    MealStatus.SKIPPED -> stringResource(R.string.status_skipped)
+                                    MealStatus.NOT_ORDERED -> stringResource(R.string.status_not_ordered)
                                 },
                                 style = MaterialTheme.typography.labelSmall
                             )
@@ -516,7 +516,7 @@ private fun DayEntryRow(
                         editNote = newNote
                         onUpdateEntry(entry.copy(note = newNote))
                     },
-                    label = { Text(stringResource(R.string.note)) },
+                    label = { Text(stringResource(R.string.add_note)) },
                     modifier = Modifier.weight(1f),
                     singleLine = true
                 )
@@ -553,7 +553,7 @@ private fun EmptyDayCard() {
         )
     ) {
         Text(
-            text = stringResource(R.string.no_meals_for_day),
+            text = stringResource(R.string.no_entries),
             modifier = Modifier.padding(24.dp),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,

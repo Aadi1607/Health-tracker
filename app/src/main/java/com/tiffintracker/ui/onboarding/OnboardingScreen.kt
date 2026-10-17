@@ -37,7 +37,7 @@ fun OnboardingContent(
         Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = stringResource(R.string.onboarding_welcome),
+            text = stringResource(R.string.welcome_title),
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
@@ -46,7 +46,7 @@ fun OnboardingContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = stringResource(R.string.onboarding_description),
+            text = stringResource(R.string.welcome_desc),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center
@@ -56,17 +56,17 @@ fun OnboardingContent(
 
         FeatureHighlight(
             icon = Icons.Outlined.Home,
-            text = stringResource(R.string.onboarding_feature_track)
+            text = "Track daily tiffin deliveries"
         )
         Spacer(modifier = Modifier.height(16.dp))
         FeatureHighlight(
             icon = Icons.Filled.DateRange,
-            text = stringResource(R.string.onboarding_feature_bills)
+            text = "Auto-calculate monthly bills"
         )
         Spacer(modifier = Modifier.height(16.dp))
         FeatureHighlight(
             icon = Icons.Filled.Notifications,
-            text = stringResource(R.string.onboarding_feature_reminders)
+            text = "Get daily reminders"
         )
 
         Spacer(modifier = Modifier.height(40.dp))

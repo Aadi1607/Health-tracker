@@ -35,7 +35,7 @@ fun MonthSelector(
         IconButton(onClick = onPrevious) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = stringResource(R.string.previous_month)
+                contentDescription = "Previous month"
             )
         }
         Text(
@@ -45,7 +45,7 @@ fun MonthSelector(
         IconButton(onClick = onNext) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = stringResource(R.string.next_month)
+                contentDescription = "Next month"
             )
         }
     }

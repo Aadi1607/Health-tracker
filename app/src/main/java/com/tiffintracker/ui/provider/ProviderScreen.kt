@@ -44,10 +44,10 @@ fun ProviderListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.providers_title)) },
+                title = { Text(stringResource(R.string.providers)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
             )
@@ -63,8 +63,8 @@ fun ProviderListScreen(
         } else if (uiState.providers.isEmpty()) {
             EmptyStateView(
                 icon = Icons.Filled.Add,
-                title = stringResource(R.string.empty_providers_title),
-                subtitle = stringResource(R.string.empty_providers_subtitle),
+                title = stringResource(R.string.empty_providers),
+                subtitle = stringResource(R.string.empty_providers_desc),
                 actionLabel = stringResource(R.string.add_provider),
                 onAction = onAddProvider,
                 modifier = Modifier.padding(innerPadding)
@@ -88,8 +88,8 @@ fun ProviderListScreen(
 
     providerToDelete?.let { provider ->
         ConfirmDialog(
-            title = stringResource(R.string.delete_provider_title),
-            message = stringResource(R.string.delete_provider_message, provider.name),
+            title = stringResource(R.string.delete_provider),
+            message = stringResource(R.string.confirm_delete_provider),
             onConfirm = {
                 viewModel.deleteProvider(provider)
                 providerToDelete = null
@@ -195,7 +195,7 @@ private fun ProviderCard(
 
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = stringResource(R.string.billing_cycle_display, provider.billingCycleStartDay),
+                text = "Billing cycle: Day ${provider.billingCycleStartDay}",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -282,7 +282,7 @@ fun AddEditProviderScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -315,7 +315,7 @@ fun AddEditProviderScreen(
                 label = { Text(stringResource(R.string.provider_name)) },
                 isError = nameError,
                 supportingText = if (nameError) {
-                    { Text(stringResource(R.string.provider_name_required)) }
+                    { Text("Provider name is required") }
                 } else null,
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true
@@ -331,7 +331,7 @@ fun AddEditProviderScreen(
             )
 
             Text(
-                text = stringResource(R.string.meal_types_offered),
+                text = "Meal Types Offered",
                 style = MaterialTheme.typography.titleSmall
             )
 
@@ -360,7 +360,7 @@ fun AddEditProviderScreen(
                 OutlinedTextField(
                     value = breakfastPrice,
                     onValueChange = { breakfastPrice = it },
-                    label = { Text(stringResource(R.string.price_breakfast)) },
+                    label = { Text(stringResource(R.string.provider_price_breakfast)) },
                     prefix = { Text("₹") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -372,7 +372,7 @@ fun AddEditProviderScreen(
                 OutlinedTextField(
                     value = lunchPrice,
                     onValueChange = { lunchPrice = it },
-                    label = { Text(stringResource(R.string.price_lunch)) },
+                    label = { Text(stringResource(R.string.provider_price_lunch)) },
                     prefix = { Text("₹") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -384,7 +384,7 @@ fun AddEditProviderScreen(
                 OutlinedTextField(
                     value = dinnerPrice,
                     onValueChange = { dinnerPrice = it },
-                    label = { Text(stringResource(R.string.price_dinner)) },
+                    label = { Text(stringResource(R.string.provider_price_dinner)) },
                     prefix = { Text("₹") },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
@@ -401,8 +401,8 @@ fun AddEditProviderScreen(
                         billingCycleStartDay = filtered
                     }
                 },
-                label = { Text(stringResource(R.string.billing_cycle_start)) },
-                supportingText = { Text(stringResource(R.string.billing_cycle_hint)) },
+                label = { Text(stringResource(R.string.provider_billing_start)) },
+                supportingText = { Text("Day of month (1-28)") },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -443,8 +443,8 @@ fun AddEditProviderScreen(
 
     if (showDeleteDialog && isEditing) {
         ConfirmDialog(
-            title = stringResource(R.string.delete_provider_title),
-            message = stringResource(R.string.delete_provider_message, name),
+            title = stringResource(R.string.delete_provider),
+            message = stringResource(R.string.confirm_delete_provider),
             onConfirm = {
                 uiState.editingProvider?.let { viewModel.deleteProvider(it) }
                 showDeleteDialog = false

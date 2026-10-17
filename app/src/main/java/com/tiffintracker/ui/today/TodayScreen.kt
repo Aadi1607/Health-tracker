@@ -110,7 +110,7 @@ fun TodayScreen(
                             fontWeight = FontWeight.Bold
                         )
                         Text(
-                            text = stringResource(R.string.today_greeting),
+                            text = stringResource(R.string.today),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -165,7 +165,7 @@ fun TodayScreen(
                     ) {
                         Icon(
                             if (showFabMenu) Icons.Default.Close else Icons.Outlined.EventBusy,
-                            contentDescription = stringResource(R.string.bulk_actions)
+                            contentDescription = "Actions"
                         )
                     }
                 }
@@ -207,7 +207,7 @@ fun TodayScreen(
                     ) { provider ->
                         MealToggleCard(
                             provider = provider,
-                            entries = uiState.entries.filter { it.providerId == provider.id },
+                            entries = uiState.todayEntries[provider.id] ?: emptyList(),
                             onToggleStatus = { mealType, currentStatus ->
                                 viewModel.toggleMealStatus(provider.id, mealType, currentStatus)
                             },
@@ -229,7 +229,7 @@ fun TodayScreen(
         AlertDialog(
             onDismissRequest = { showHolidayConfirm = false },
             title = { Text(stringResource(R.string.mark_holiday)) },
-            text = { Text(stringResource(R.string.mark_holiday_confirm)) },
+            text = { Text(stringResource(R.string.confirm_mark_holiday)) },
             confirmButton = {
                 Button(
                     onClick = {
@@ -376,7 +376,7 @@ private fun MealRow(
                 ) {
                     Icon(
                         Icons.Default.Remove,
-                        contentDescription = stringResource(R.string.decrease_quantity),
+                        contentDescription = "Decrease",
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -393,7 +393,7 @@ private fun MealRow(
                 ) {
                     Icon(
                         Icons.Default.Add,
-                        contentDescription = stringResource(R.string.increase_quantity),
+                        contentDescription = "Increase",
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -430,7 +430,7 @@ private fun MealRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 28.dp, top = 4.dp),
-                placeholder = { Text(stringResource(R.string.note_placeholder)) },
+                placeholder = { Text(stringResource(R.string.note_hint)) },
                 textStyle = MaterialTheme.typography.bodySmall,
                 singleLine = true
             )
@@ -518,13 +518,13 @@ private fun EmptyProviderState(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = stringResource(R.string.empty_providers_title),
+            text = stringResource(R.string.empty_providers),
             style = MaterialTheme.typography.titleLarge,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = stringResource(R.string.empty_providers_subtitle),
+            text = stringResource(R.string.empty_providers_desc),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -589,9 +589,9 @@ fun DateRangePickerDialog(
 
 @Composable
 private fun mealTypeLabel(mealType: MealType): String = when (mealType) {
-    MealType.BREAKFAST -> stringResource(R.string.breakfast)
-    MealType.LUNCH -> stringResource(R.string.lunch)
-    MealType.DINNER -> stringResource(R.string.dinner)
+    MealType.BREAKFAST -> stringResource(R.string.meal_breakfast)
+    MealType.LUNCH -> stringResource(R.string.meal_lunch)
+    MealType.DINNER -> stringResource(R.string.meal_dinner)
 }
 
 private fun mealTypeIcon(mealType: MealType): ImageVector = when (mealType) {

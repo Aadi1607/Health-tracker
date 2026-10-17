@@ -49,8 +49,8 @@ fun StatsScreen(
             uiState.monthlyData.isEmpty() -> {
                 EmptyStateView(
                     icon = Icons.Filled.DateRange,
-                    title = stringResource(R.string.empty_stats_title),
-                    subtitle = stringResource(R.string.empty_stats_subtitle),
+                    title = stringResource(R.string.empty_stats),
+                    subtitle = stringResource(R.string.empty_stats_desc),
                     modifier = Modifier.padding(innerPadding)
                 )
             }
@@ -85,7 +85,7 @@ private fun MealsBarChart(
     Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = stringResource(R.string.stats_meals_per_month),
+                text = stringResource(R.string.meals_per_month),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
@@ -170,7 +170,7 @@ private fun SpendingTrendChart(
     Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = stringResource(R.string.stats_spending_trend),
+                text = stringResource(R.string.spending_trend),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
@@ -279,13 +279,13 @@ private fun SkipRateCard(
             Spacer(modifier = Modifier.width(24.dp))
             Column {
                 Text(
-                    text = stringResource(R.string.stats_skip_rate),
+                    text = stringResource(R.string.skip_rate),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = stringResource(R.string.stats_skip_detail, totalSkipped, total),
+                    text = "$totalSkipped of $total meals skipped",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -306,7 +306,7 @@ private fun SummaryCard(
     Card(modifier = modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = stringResource(R.string.stats_summary),
+                text = "Summary",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.SemiBold
             )
@@ -314,17 +314,17 @@ private fun SummaryCard(
 
             Row(modifier = Modifier.fillMaxWidth()) {
                 SummaryItem(
-                    label = stringResource(R.string.stats_total_received),
+                    label = "Total Received",
                     value = totalReceived.toString(),
                     modifier = Modifier.weight(1f)
                 )
                 SummaryItem(
-                    label = stringResource(R.string.stats_total_skipped),
+                    label = "Total Skipped",
                     value = totalSkipped.toString(),
                     modifier = Modifier.weight(1f)
                 )
                 SummaryItem(
-                    label = stringResource(R.string.stats_total_spent),
+                    label = "Total Spent",
                     value = "₹${String.format("%,.0f", totalSpent)}",
                     modifier = Modifier.weight(1f)
                 )

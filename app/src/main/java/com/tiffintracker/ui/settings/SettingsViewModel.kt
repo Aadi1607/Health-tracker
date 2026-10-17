@@ -79,6 +79,13 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun exportBackup(onResult: (String) -> Unit) {
+        viewModelScope.launch {
+            val json = backupRepository.exportToJson()
+            onResult(json)
+        }
+    }
+
     fun clearExportedJson() {
         _uiState.update { it.copy(exportedJson = null) }
     }
@@ -87,6 +94,13 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             val success = backupRepository.importFromJson(json)
             _uiState.update { it.copy(importSuccess = success) }
+        }
+    }
+
+    fun importBackup(json: String, onResult: (Boolean) -> Unit) {
+        viewModelScope.launch {
+            val success = backupRepository.importFromJson(json)
+            onResult(success)
         }
     }
 

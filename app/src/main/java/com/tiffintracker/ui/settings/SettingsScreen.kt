@@ -1,6 +1,5 @@
 package com.tiffintracker.ui.settings
 
-import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -43,7 +42,7 @@ fun SettingsScreen(
                 context.contentResolver.openOutputStream(uri)?.use { stream ->
                     stream.write(json.toByteArray())
                 }
-                Toast.makeText(context, context.getString(R.string.backup_exported), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.backup_success), Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -55,8 +54,8 @@ fun SettingsScreen(
             val json = context.contentResolver.openInputStream(uri)?.bufferedReader()?.readText()
             if (json != null) {
                 viewModel.importBackup(json) { success ->
-                    val msg = if (success) context.getString(R.string.backup_restored)
-                    else context.getString(R.string.backup_restore_failed)
+                    val msg = if (success) context.getString(R.string.restore_success)
+                    else context.getString(R.string.restore_failed)
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                 }
             }
@@ -74,11 +73,11 @@ fun SettingsScreen(
                 .verticalScroll(rememberScrollState())
         ) {
             // ── Reminders Section ──
-            SectionHeader(text = stringResource(R.string.settings_reminders))
+            SectionHeader(text = "Reminders")
 
             ListItem(
-                headlineContent = { Text(stringResource(R.string.settings_daily_reminder)) },
-                supportingContent = { Text(stringResource(R.string.settings_reminder_desc)) },
+                headlineContent = { Text(stringResource(R.string.reminder)) },
+                supportingContent = { Text("Get reminded to log your meals") },
                 leadingContent = {
                     Icon(Icons.Filled.Notifications, contentDescription = null)
                 },
@@ -92,7 +91,7 @@ fun SettingsScreen(
 
             if (uiState.reminderEnabled) {
                 ListItem(
-                    headlineContent = { Text(stringResource(R.string.settings_reminder_time)) },
+                    headlineContent = { Text(stringResource(R.string.reminder_time)) },
                     supportingContent = {
                         Text(formatTime(uiState.reminderHour, uiState.reminderMinute))
                     },
@@ -103,10 +102,10 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
             // ── Appearance Section ──
-            SectionHeader(text = stringResource(R.string.settings_appearance))
+            SectionHeader(text = "Appearance")
 
             ListItem(
-                headlineContent = { Text(stringResource(R.string.settings_theme)) },
+                headlineContent = { Text(stringResource(R.string.theme)) },
                 supportingContent = {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -131,19 +130,19 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
             // ── Data Section ──
-            SectionHeader(text = stringResource(R.string.settings_data))
+            SectionHeader(text = "Data")
 
             ListItem(
-                headlineContent = { Text(stringResource(R.string.settings_backup)) },
-                supportingContent = { Text(stringResource(R.string.settings_backup_desc)) },
+                headlineContent = { Text(stringResource(R.string.backup_data)) },
+                supportingContent = { Text("Export your data as a backup file") },
                 modifier = Modifier.clickable {
                     exportLauncher.launch("tiffin_tracker_backup.json")
                 }
             )
 
             ListItem(
-                headlineContent = { Text(stringResource(R.string.settings_restore)) },
-                supportingContent = { Text(stringResource(R.string.settings_restore_desc)) },
+                headlineContent = { Text(stringResource(R.string.restore_data)) },
+                supportingContent = { Text("Import data from a backup file") },
                 modifier = Modifier.clickable {
                     importLauncher.launch(arrayOf("application/json"))
                 }
@@ -152,11 +151,11 @@ fun SettingsScreen(
             ListItem(
                 headlineContent = {
                     Text(
-                        stringResource(R.string.settings_clear_data),
+                        stringResource(R.string.clear_data),
                         color = MaterialTheme.colorScheme.error
                     )
                 },
-                supportingContent = { Text(stringResource(R.string.settings_clear_data_desc)) },
+                supportingContent = { Text("Delete all data permanently") },
                 leadingContent = {
                     Icon(
                         Icons.Filled.Delete,
@@ -170,11 +169,11 @@ fun SettingsScreen(
             HorizontalDivider(modifier = Modifier.padding(horizontal = 16.dp))
 
             // ── About Section ──
-            SectionHeader(text = stringResource(R.string.settings_about))
+            SectionHeader(text = stringResource(R.string.about))
 
             ListItem(
                 headlineContent = { Text(stringResource(R.string.app_name)) },
-                supportingContent = { Text(stringResource(R.string.settings_version, "1.0.0")) },
+                supportingContent = { Text(stringResource(R.string.version, "1.0.0")) },
                 leadingContent = {
                     Icon(Icons.Filled.Settings, contentDescription = null)
                 }
@@ -198,12 +197,12 @@ fun SettingsScreen(
 
     if (showClearDataDialog) {
         ConfirmDialog(
-            title = stringResource(R.string.settings_clear_data),
-            message = stringResource(R.string.clear_data_confirm),
+            title = stringResource(R.string.clear_data),
+            message = stringResource(R.string.confirm_clear_data),
             onConfirm = {
                 viewModel.clearAllData()
                 showClearDataDialog = false
-                Toast.makeText(context, context.getString(R.string.data_cleared), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Data cleared", Toast.LENGTH_SHORT).show()
             },
             onDismiss = { showClearDataDialog = false }
         )
@@ -237,7 +236,7 @@ private fun TimePickerDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.settings_select_time)) },
+        title = { Text("Select Time") },
         text = {
             TimePicker(state = timePickerState)
         },

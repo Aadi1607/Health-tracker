@@ -31,7 +31,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
@@ -82,12 +81,15 @@ fun BillsScreen(
         uiState = uiState,
         onPreviousMonth = { viewModel.navigateMonth(false) },
         onNextMonth = { viewModel.navigateMonth(true) },
-        onSelectProvider = { viewModel.selectProvider(it) },
+        onSelectProvider = { viewModel.loadBillForProvider(it, uiState.yearMonth) },
         onAddPayment = { providerId, amount, date, mode, note ->
-            viewModel.addPayment(providerId, amount, date, mode, note)
+            viewModel.addPayment(Payment(providerId = providerId, amount = amount, date = date, mode = mode.name, note = note))
         },
         onDeletePayment = { viewModel.deletePayment(it) },
-        onShareBill = { viewModel.shareBill(context, it) }
+        onShareBill = { providerId ->
+            val text = viewModel.generateBillText(providerId, uiState.yearMonth)
+            com.tiffintracker.util.shareText(context, text)
+        }
     )
 }
 
@@ -127,7 +129,7 @@ private fun BillsContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = stringResource(R.string.empty_no_providers),
+                    text = "No providers yet. Add a provider first.",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -189,7 +191,7 @@ private fun MonthSelector(
         IconButton(onClick = onPrevious) {
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                contentDescription = stringResource(R.string.btn_previous_month)
+                contentDescription = "Previous month"
             )
         }
 
@@ -202,7 +204,7 @@ private fun MonthSelector(
         IconButton(onClick = onNext) {
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = stringResource(R.string.btn_next_month)
+                contentDescription = "Next month"
             )
         }
     }
@@ -225,7 +227,7 @@ private fun MonthlySummaryCard(providerBills: List<ProviderBill>) {
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = stringResource(R.string.bill_monthly_summary),
+                text = "Monthly Summary",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -238,11 +240,11 @@ private fun MonthlySummaryCard(providerBills: List<ProviderBill>) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 SummaryItem(
-                    label = stringResource(R.string.bill_total_meals),
+                    label = "Total Meals",
                     value = totalReceived.toString()
                 )
                 SummaryItem(
-                    label = stringResource(R.string.bill_amount_due),
+                    label = "Amount Due",
                     value = formatCurrency(totalDue)
                 )
             }
@@ -254,11 +256,11 @@ private fun MonthlySummaryCard(providerBills: List<ProviderBill>) {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 SummaryItem(
-                    label = stringResource(R.string.bill_amount_paid),
+                    label = "Amount Paid",
                     value = formatCurrency(totalPaid)
                 )
                 SummaryItem(
-                    label = stringResource(R.string.bill_balance),
+                    label = "Balance",
                     value = formatCurrency(balance),
                     valueColor = if (balance > 0) MaterialTheme.colorScheme.error
                     else MaterialTheme.colorScheme.tertiary
@@ -324,9 +326,7 @@ private fun ProviderBillCard(
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp
                     else Icons.Default.KeyboardArrowDown,
-                    contentDescription = if (isExpanded)
-                        stringResource(R.string.btn_collapse)
-                    else stringResource(R.string.btn_expand)
+                    contentDescription = if (isExpanded) "Collapse" else "Expand"
                 )
             }
 
@@ -364,7 +364,7 @@ private fun ProviderBillCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.bill_total),
+                    text = "Total",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.Bold
                 )
@@ -382,7 +382,7 @@ private fun ProviderBillCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.bill_paid),
+                    text = "Paid",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -398,7 +398,7 @@ private fun ProviderBillCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = stringResource(R.string.bill_balance),
+                    text = "Balance",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -421,7 +421,7 @@ private fun ProviderBillCard(
                     onClick = onRecordPayment,
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(stringResource(R.string.btn_record_payment))
+                    Text("Record Payment")
                 }
                 OutlinedButton(
                     onClick = onShareBill,
@@ -433,7 +433,7 @@ private fun ProviderBillCard(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text(stringResource(R.string.btn_share_bill))
+                    Text("Share")
                 }
             }
 
@@ -488,14 +488,14 @@ private fun PaymentHistorySection(
 ) {
     if (payments.isEmpty()) {
         Text(
-            text = stringResource(R.string.empty_no_payments),
+            text = "No payments recorded",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(vertical = 8.dp)
         )
     } else {
         Text(
-            text = stringResource(R.string.bill_payment_history),
+            text = "Payment History",
             style = MaterialTheme.typography.labelLarge,
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 4.dp)
@@ -557,7 +557,7 @@ private fun PaymentRow(
         IconButton(onClick = { showDeleteConfirm = true }) {
             Icon(
                 Icons.Default.Delete,
-                contentDescription = stringResource(R.string.btn_delete),
+                contentDescription = stringResource(R.string.delete),
                 tint = MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(20.dp)
             )
@@ -567,19 +567,19 @@ private fun PaymentRow(
     if (showDeleteConfirm) {
         AlertDialog(
             onDismissRequest = { showDeleteConfirm = false },
-            title = { Text(stringResource(R.string.dialog_delete_payment_title)) },
-            text = { Text(stringResource(R.string.dialog_delete_payment_message)) },
+            title = { Text("Delete Payment") },
+            text = { Text("Are you sure you want to delete this payment?") },
             confirmButton = {
                 TextButton(onClick = {
                     onDelete()
                     showDeleteConfirm = false
                 }) {
-                    Text(stringResource(R.string.btn_delete))
+                    Text(stringResource(R.string.delete))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showDeleteConfirm = false }) {
-                    Text(stringResource(R.string.btn_cancel))
+                    Text(stringResource(R.string.cancel))
                 }
             }
         )
@@ -600,7 +600,7 @@ private fun RecordPaymentDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.btn_record_payment)) },
+        title = { Text("Record Payment") },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedTextField(
@@ -609,12 +609,12 @@ private fun RecordPaymentDialog(
                         amountText = it
                         amountError = false
                     },
-                    label = { Text(stringResource(R.string.payment_amount)) },
+                    label = { Text("Amount") },
                     prefix = { Text("₹") },
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
                     isError = amountError,
                     supportingText = if (amountError) {
-                        { Text(stringResource(R.string.error_invalid_amount)) }
+                        { Text("Please enter a valid amount") }
                     } else null,
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
@@ -673,12 +673,12 @@ private fun RecordPaymentDialog(
                     }
                 }
             ) {
-                Text(stringResource(R.string.btn_save))
+                Text(stringResource(R.string.save))
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.btn_cancel))
+                Text(stringResource(R.string.cancel))
             }
         }
     )
@@ -702,6 +702,10 @@ private fun BillsContentPreview() {
         createdAt = System.currentTimeMillis()
     )
     val sampleBill = BillSummary(
+        providerId = 1L,
+        providerName = "Sharma Tiffin",
+        startDate = "2026-10-01",
+        endDate = "2026-10-31",
         breakfastCount = 22,
         lunchCount = 25,
         dinnerCount = 20,
